@@ -1,0 +1,280 @@
+
+header-fullscreen{
+  float:right;
+  margin-right: 1%;
+  color:black;
+}
+header-fullscreen:hover{
+  color:white;
+}
+
+.vehicle-card{
+  width:300px;
+  margin-right: 20px ;
+  padding: 20px 0;
+  color:white;
+  background-image: url("../../../../assets/tmp/img/b.png");
+  background-position: center;
+  background-size: 105% 105%;
+}
+
+.vehicle-card:hover{
+  background-size: 100% 100%;
+}
+
+.vehicle-info{
+  margin: 20px 20px;
+}
+.vehicle-card-button{
+  display: block;
+  margin: 0 auto;
+  color:white;
+  background-color: #00d8ff;
+  border-color: #00eaff;
+}
+.hmi-modal{
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index:1010;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.4);
+}
+.my-modal{
+  position: fixed;
+  _position:absolute;
+  top: 50%;
+  left: 50%;
+  z-index:1011;
+  width: 1200px;
+  height: 675px;
+  margin-top:-338px;
+  margin-left:-600px;
+  padding: 0;
+  overflow: hidden;
+  background: black;
+  border: 1px solid black;
+  box-shadow: -5px -5px 10px 5px slategray,5px 5px 10px 5px slategray;
+}
+.my-modal-header{
+  height: 70px;
+  margin-top: 2%;
+  color:white;
+  font-size: 22px;
+  text-align: center;
+}
+.my-modal-content{
+    height: 500px;
+}
+
+.vehicle-map{
+  float:left;
+  width:40%;
+  height:250px;
+  margin: 0 5% 0 7%;
+  overflow: hidden;
+  border: 3px solid #2D2F37;
+  border-radius: 5%;
+  box-shadow: -5px -5px 10px 5px slategray,5px 5px 10px 5px slategray;
+  //box-sizing: border-box;
+}
+.map-item{
+  width: 100%;
+  height: 100%;
+}
+
+.vehicle-video{
+  width: 40%;
+  height: 250px;
+  margin: 0 0 0 8%;
+  overflow: hidden;
+  border: 3px solid black;
+  border-radius: 5%;
+  box-shadow: -5px -5px 10px 5px slategray ,5px 5px 10px 5px slategray;
+}
+.view-vehicleInfoLeft{
+  float:left;
+  width:25%;
+  height: auto;
+  //background: white;
+  margin: 2% 0 0 8%
+}
+.left-item-title{
+  margin-top: 10px;
+  color: white;
+  font-size: 18px;
+  text-align: center
+}
+
+.vehicle-echarts{
+  float:left;
+  width:35%;
+  height:300px;
+  margin-top: 20px;
+  background:black;
+}
+
+.view-vehicleInfoRight{
+  float:left;
+  width:25%;
+  height: 300px;
+  //background: white;
+  margin-top: 20px;
+}
+
+.view-vehicleInfo{
+  //display: flex;
+  float:left;
+  width: 50%;
+  //background: white;
+  margin-left: 30%;
+  color:white;
+}
+.left-itemInfo {
+  width:70%;
+  margin: 0 auto;
+  color:white;
+  text-align: center;
+  background: rgba(30,144,255,0.8);
+  border: 1px solid black;
+  border-radius: 10%
+}
+
+.vehicle-state{
+  margin: 20px 0;
+}
+
+.vehicle-state-item{
+  float: left;
+  width:33%;
+  color: white;
+}
+
+.scroll-div{
+  float: left;
+  height: 200px;
+  margin-top: 10px;
+  overflow-x:hidden;
+  overflow-y:auto;
+  color:white;
+  font-size: 11px;
+}
+
+
+.scroll-div::-webkit-scrollbar{
+  width:2px;
+  //background-color: rgba(0,0,0,0);
+}
+
+.scroll-div:hover{
+  overflow-y: scroll;
+  ::-webkit-scrollbar{
+    background-color: white;
+  }
+}
+
+.state-exist{
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-left: 2px;
+  background: green;
+  border-radius: 50%;
+  box-shadow: 0 0 4px 2px slategray;
+}
+.state-lose{
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-left: 2px;
+  background: red;
+  border-radius: 50%;
+  box-shadow: 0 0 4px 2px slategray
+}
+
+@media screen and (max-width: 767px){
+  ::ng-deep .hmi-mobile {
+    .ant-modal{
+      height:auto;
+      background-color: black;
+      border: 1px solid black;
+      box-shadow: -5px -5px 10px 5px slategray,5px 5px 10px 5px slategray;
+      .ant-modal-header{
+        padding-top: 40px;
+        background:none;
+        border: none;
+      }
+      .ant-modal-title{
+        color:white;
+        font-size: 20px;
+        text-align: center;
+      }
+      .ant-modal-close{
+        color:white;
+      }
+      .ant-modal-content{
+        background: none;
+      }
+    }
+
+  }
+
+
+
+  .vehicle-map{
+    float:none;
+    width:100%;
+    height: 200px;
+    margin: 10% 0;
+    overflow: hidden;
+  }
+  .vehicle-video{
+    width: 100%;
+    height:200px;
+    margin: 10% 0;
+  }
+  .view-vehicleInfoLeft{
+    float:none;
+    width:100%;
+    margin: 10% 0;
+    //background: white;
+  }
+
+  .vehicle-echarts{
+    float:none;
+    width:100%;
+    margin: 10% 0;
+  }
+
+  .view-vehicleInfoRight{
+    float:none;
+    width:100%;
+  }
+
+  .view-vehicleInfo{
+    float:none;
+    width: 100%;
+  }
+
+  .vehicle-state{
+    width: 100%;
+    height: 100px;
+  }
+
+  .vehicle-state-item{
+
+  }
+
+  .scroll-div{
+    float:none;
+    width: 100%;
+    height: 200px;
+    margin: 10% 0;
+    overflow-y:visible;
+    .scroll-div::-webkit-scrollbar{
+      background: white;
+    }
+  }
+
+}

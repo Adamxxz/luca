@@ -1,0 +1,116 @@
+<page-header [homeI18n]="'首页'"></page-header>
+<div class="view-page-fullscreen"></div>
+<div style="color: white;">
+  {{ noticeMsg }}
+  <div class="vehicle-card" *ngFor="let vehicle of vehicles">
+    <h3 style="text-align: center; color: white; text-shadow: #00d8ff;">{{ vehicle[0][1] }}</h3>
+    <div class="vehicle-info" *ngFor="let item of vehicle">{{ item[0] }} : {{ item[1] }}</div>
+
+    <button class="vehicle-card-button" (click)="monitorPlay(vehicle)">
+      打开监控界面
+    </button>
+  </div>
+</div>
+
+<div *ngIf="pcVisible" class="hmi-modal" role="document" (click)="pcCancel($event)">
+  <div class="my-modal" id="my-modal">
+    <div class="my-modal-header">
+      SINOPILOT实时监控
+      <header-fullscreen></header-fullscreen>
+    </div>
+    <div class="my-modal-content">
+      <div *ngIf="pcWindow">
+        <div class="vehicle-map">
+          <ngx-amap class="map-item" [center]="center" (naReady)="mapReady($event)" [resizeEnable]="true" [zoom]="13">
+            <amap-marker [position]="center"> </amap-marker>
+          </ngx-amap>
+        </div>
+        <!--        <div id="video" class="vehicle-video"></div>-->
+        <div id="videoE" class="vehicle-video" aria-controls webkit-playsinline></div>
+        <div class="view-vehicleInfoLeft">
+          <div class="left-item-title">
+            车牌号
+            <div class="left-itemInfo" *ngIf="plateNo">{{ plateNo }}</div>
+          </div>
+          <div class="left-item-title">
+            总里程(Km)
+            <div class="left-itemInfo" *ngIf="vehicleData">{{ vehicleData.total_dist / 1000 }}</div>
+          </div>
+          <div class="left-item-title">
+            平均油耗(L/100Km)
+            <div class="left-itemInfo" *ngIf="vehicleData">{{ vehicleData.avg_fuel_csmpt }}</div>
+          </div>
+          <div class="left-item-title">
+            瞬时油耗(L/100Km)
+            <div class="left-itemInfo" *ngIf="vehicleData">{{ vehicleData.inst_fuel_csmpt }}</div>
+          </div>
+        </div>
+
+        <div class="vehicle-echarts" echarts [options]="boardOption" (chartInit)="chartInit($event)" id="chartmain"></div>
+
+        <div class="view-vehicleInfoRight">
+          <div *ngIf="vehicleState" class="vehicle-state">
+            <div *ngFor="let item of vehicleState" class="vehicle-state-item">
+              {{ item[0] }} :
+              <div *ngIf="item[1] == 0 || !item[1]" class="state-{{ item[1] }}"></div>
+              <div *ngIf="item[1] != 0" class="state-exist"></div>
+            </div>
+          </div>
+          <div *ngIf="vehicleData" style="color: white;">STEER: {{ vehicleData.steer }}</div>
+          <div id="scroll-div" class="scroll-div"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<nz-modal
+  [(nzVisible)]="mobileVisible"
+  [nzTitle]="'SINOPILOT实时监控'"
+  [nzWrapClassName]="'hmi-mobile'"
+  (nzOnCancel)="mobileCancel()"
+  [nzFooter]="null"
+>
+  <div *ngIf="mobileWindow">
+    <div class="vehicle-map">
+      <ngx-amap class="map-item" [center]="center" (naReady)="mapReady($event)" [resizeEnable]="true" [zoom]="13">
+        <amap-marker [position]="center"> </amap-marker>
+      </ngx-amap>
+    </div>
+    <!--    <div id="video" class="vehicle-video"></div>-->
+    <div id="video" class="vehicle-video" aria-controls webkit-playsinline></div>
+    <div class="view-vehicleInfoLeft">
+      <!--      <button (click)="fullscreenX()">最大化</button>-->
+      <div class="left-item-title">
+        车牌号
+        <div class="left-itemInfo" *ngIf="plateNo">{{ plateNo }}</div>
+      </div>
+      <div class="left-item-title">
+        总里程(Km)
+        <div class="left-itemInfo" *ngIf="vehicleData">{{ vehicleData.total_dist / 1000 }}</div>
+      </div>
+      <div class="left-item-title">
+        平均油耗(L/100Km)
+        <div class="left-itemInfo" *ngIf="vehicleData">{{ vehicleData.avg_fuel_csmpt }}</div>
+      </div>
+      <div class="left-item-title">
+        瞬时油耗(L/100Km)
+        <div class="left-itemInfo" *ngIf="vehicleData">{{ vehicleData.inst_fuel_csmpt }}</div>
+      </div>
+    </div>
+
+    <div class="vehicle-echarts" echarts [options]="boardOption" (chartInit)="chartInit($event)" id="chartmain"></div>
+
+    <div class="view-vehicleInfoRight">
+      <div *ngIf="vehicleState" class="vehicle-state">
+        <div *ngFor="let item of vehicleState" class="vehicle-state-item">
+          {{ item[0] }} :
+          <div *ngIf="item[1] == 0 || !item[1]" class="state-{{ item[1] }}"></div>
+          <div *ngIf="item[1] != 0" class="state-exist"></div>
+        </div>
+      </div>
+      <div *ngIf="vehicleData" style="color: white;">STEER: {{ vehicleData.steer }}</div>
+      <div id="scroll-div" class="scroll-div"></div>
+    </div>
+  </div>
+</nz-modal>

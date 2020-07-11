@@ -1,0 +1,12 @@
+<page-header [homeI18n]="'首页'"></page-header>
+<div class="main">
+  <div class="menu">
+    <ul nz-menu nzTheme="light" [nzMode]="mode">
+      <li *ngFor="let m of menus" nz-menu-item [nzSelected]="m.selected" (click)="to(m)">{{ m.title }}</li>
+    </ul>
+  </div>
+  <div class="content">
+    <div class="title">{{ title }}</div>
+    <router-outlet></router-outlet>
+  </div>
+</div>

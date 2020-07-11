@@ -1,0 +1,136 @@
+@import '~@delon/theme/index';
+:host {
+  //display: block;
+  //width: 100%;
+  //margin: 0 auto;
+  ::ng-deep {
+    .ant-tabs .ant-tabs-bar {
+      //margin-bottom: 24px;
+      text-align: center;
+      border-bottom: 0;
+    }
+    .ant-tabs-tab {
+      color:white;
+      font-size: 16px;
+    }
+    .ant-tabs-bar {
+      margin-bottom: 0;
+    }
+    .ant-tabs-tab:hover{
+      color:#00d8ff;
+    }
+    .ant-tabs-ink-bar{
+      background-color: #00d8ff;
+    }
+
+    .ant-input-affix-wrapper .ant-input:not(:first-child) {
+      padding-left: 4px;
+    }
+    .ant-form-item{
+      margin: 24px 0 0 65px;
+    }
+
+    .content{
+      width: 100%;
+      height: 100%;
+    }
+
+
+    .content-right{
+      //float: left;
+      position: relative;
+      width:400px ;
+      height: 400px ;
+      margin:0 auto;
+      background: url("../../../../assets/tmp/img/e.png") no-repeat;
+      background-size: 100% 100%;
+
+    }
+    .right-infp{
+      position: absolute;
+      width: 100%;
+      height: auto;
+      margin: 80px 0 0 0;
+      vertical-align: center;
+    }
+
+    .right-infp-name{
+      position: relative;
+      width: 80%;
+      height: 35px;
+      margin: 0;
+      background: url("../../../../assets/tmp/img/b.png") no-repeat;
+      background-size: 100% 100%;
+      border: none;
+    }
+
+    .right-infp-name input{
+      position: absolute;
+      width: 100%;
+      color: #00eaff;
+      background: none !important;
+      border: none;
+      outline: none;
+      -webkit-tap-highlight-color:rgba(255,0,0,0);
+    }
+
+    .icon {
+      margin-left: 16px;
+      color: white;
+      font-size: 24px;
+      vertical-align: middle;
+      cursor: pointer;
+      transition: color 0.3s;
+      &:hover {
+        color: @primary-color;
+      }
+    }
+    .other {
+      margin-top: 24px;
+      color:white;
+      line-height: 22px;
+      text-align: left;
+      nz-tooltip {
+        vertical-align: middle;
+      }
+    }
+    .register {
+      margin-top: 10px;
+      color:white;
+    }
+  }
+}
+.forgot{
+  margin-left: 40px;
+  color:white;
+}
+.ant-btn-lg{
+  height:35px;
+  padding:0;
+}
+.right-infp-btn{
+  position: relative;
+  width: 80%;
+  height: 35px;
+  margin-bottom: 10px;
+  background: url("../../../../assets/tmp/img/a.png") no-repeat;
+  background-size: 100% 100%;
+}
+
+.right-infp-btn .btn{
+  position: absolute;
+  box-sizing: border-box;
+  width: 100%;
+  color: #fff;
+  font-size: 18px;
+  background: none;
+  border: none;
+  outline: none;
+  cursor: pointer;
+
+
+}
+.right-infp-btn .btn:hover{
+
+}
+

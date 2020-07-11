@@ -1,0 +1,72 @@
+@import '~@delon/theme/index';
+@import '~ng-zorro-antd/modal/style/modal';
+:host ::ng-deep {
+  .ant-list-item-meta-title{
+    color:white;
+    font-weight: bold;
+  }
+  .ant-list-item-meta-description{
+    color: white;
+  }
+  .ant-list-item a{
+    color: #00eaff;
+  }
+
+  .register-password-cdk {
+    .success,
+    .warning,
+    .error {
+      transition: color 0.3s;
+    }
+    .success {
+      color: @success-color;
+    }
+    .warning {
+      color: @warning-color;
+    }
+    .error {
+      color: @error-color;
+    }
+    .progress-pass > .progress {
+      .ant-progress-bg {
+        background-color: @warning-color;
+      }
+    }
+  }
+
+}
+::ng-deep .ant-modal{
+  height: auto;
+  padding-bottom: 0;
+  background-image: url("../../../../../../assets/tmp/img/b.png");
+  background-position: center;
+  background-size: 106% 106%;
+  .ant-modal-title{
+    color:#00d8ff;
+  }
+  .ant-modal-content{
+    background: none;
+    border: none;
+  }
+  .ant-modal-header{
+    background: none;
+    border-bottom: none;
+  }
+
+  .ant-form-item-label label{
+    color:white;
+  }
+
+  .ant-input:focus{
+    border:2px solid #00eaff;
+  }
+
+  .ant-btn{
+    color:white;
+    background-color: #00d8ff;
+    border:1px solid #00eaff;
+  }
+  .ant-btn:hover{
+    border:2px solid white;
+  }
+}

@@ -1,0 +1,100 @@
+@import '~@delon/theme/index';
+:host {
+  //display: block;
+  //width: 800px;
+  //margin: 0 auto;
+  ::ng-deep {
+    h3 {
+      margin-bottom: 20px;
+      color:white;
+      font-size: 16px;
+    }
+    .submit {
+      width: 50%;
+    }
+    .login {
+      float: right;
+      color:white;
+      line-height: @btn-height-lg;
+    }
+  }
+}
+
+::ng-deep {
+  .register-password-cdk {
+    .success,
+    .warning,
+    .error {
+      transition: color 0.3s;
+    }
+    .success {
+      color: @success-color;
+    }
+    .warning {
+      color: @warning-color;
+    }
+    .error {
+      color: @error-color;
+    }
+    .progress-pass > .progress {
+      .ant-progress-bg {
+        background-color: @warning-color;
+      }
+    }
+  }
+}
+.register-right{
+  width: 400px;
+  height: 400px;
+  //float:left
+}
+.right-infp-name{
+  position: relative;
+  width: 100%;
+  height: 35px;
+  margin: 0;
+  background: url("../../../../assets/tmp/img/b.png") no-repeat;
+  background-size: 100% 100%;
+  border: none;
+}
+
+.right-infp-name input{
+  position: absolute;
+  width: 100%;
+  color: #00eaff;
+  background: none !important;
+  border: none;
+  outline: none;
+  -webkit-tap-highlight-color:rgba(255,0,0,0);
+}
+
+.ant-btn-lg{
+  height:35px;
+  padding:0;
+}
+
+.right-infp-btn{
+  position: relative;
+  width: 100%;
+  height: 35px;
+  margin-bottom: 10px;
+  background: url("../../../../assets/tmp/img/a.png") no-repeat;
+  background-size: 100% 100%;
+}
+
+.right-infp-btn .submit{
+  position: absolute;
+  box-sizing: border-box;
+  width: 100%;
+  color: #fff;
+  font-size: 18px;
+  background: none;
+  border: none;
+  outline: none;
+  cursor: pointer;
+
+
+}
+.right-infp-btn .btn:hover{
+
+}

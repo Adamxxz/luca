@@ -1,0 +1,27 @@
+
+{
+  "/api/lapp/*": {
+    "target": "https://open.ys7.com",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  "/user/*": {
+    "target": "https://weichai-wit.com:8080",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  "/vehicle/*": {
+    "target": "https://weichai-wit.com:8080",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  "/sms/*": {
+    "target": "https://weichai-wit.com:8080",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}

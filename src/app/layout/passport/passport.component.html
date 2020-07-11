@@ -1,0 +1,28 @@
+<div class="container">
+  <div class="fullscreen-d">
+    <header-fullscreen class="index-fullscreen"></header-fullscreen>
+  </div>
+  <div class="top">
+    <div class="header">
+      <div class="header-center fl">
+        <div class="header-title">
+          SINOPILOT
+        </div>
+        <div class="header-img"></div>
+      </div>
+      <div class="header-bottom fl"></div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="content-left">
+      <div class="content-left-gif"></div>
+    </div>
+
+    <router-outlet></router-outlet>
+  </div>
+
+  <global-footer [links]="links">
+    Copyright
+    <i class="anticon anticon-copyright"></i> 2020 <a href="//github.com/cipchk" target="_blank" style="color: whitesmoke;">WIT</a>出品
+  </global-footer>
+</div>

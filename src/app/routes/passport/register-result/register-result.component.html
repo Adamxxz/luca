@@ -1,0 +1,14 @@
+<result type="success" [title]="title">
+  <ng-template #title>
+    <div class="title" style="font-size: 20px; color: white;">你的账户：{{ username }} 注册成功</div>
+    <div style="font-size: 14px; color: white;">
+      点击按钮跳转页面
+    </div>
+  </ng-template>
+  <button (click)="msg.success('username')" nz-button nzSize="large">
+    进入主页
+  </button>
+  <button routerLink="/" nz-button nzSize="large">
+    返回首页
+  </button>
+</result>

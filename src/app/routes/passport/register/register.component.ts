@@ -1,0 +1,148 @@
+import { Component, OnDestroy } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { _HttpClient } from '@delon/theme';
+import { NzMessageService } from 'ng-zorro-antd/message';
+
+@Component({
+  selector: 'passport-register',
+  templateUrl: './register.component.html',
+  styleUrls: ['./register.component.less'],
+})
+export class UserRegisterComponent implements OnDestroy {
+  constructor(fb: FormBuilder, private router: Router, public http: _HttpClient, public msg: NzMessageService) {
+    this.form = fb.group({
+      username: [null, [Validators.required, Validators.pattern(/^(\w|\d|"_"){6,}$/)]],
+      password: [null, [Validators.required, Validators.minLength(6), UserRegisterComponent.checkPassword.bind(this)]],
+      confirm: [null, [Validators.required, Validators.minLength(6), UserRegisterComponent.passwordEquar]],
+      mobilePrefix: ['+86'],
+      mobile: [null, [Validators.required, Validators.pattern(/^1\d{10}$/)]],
+      captcha: [null, [Validators.required, Validators.pattern(/^\d{6}$/)]],
+    });
+  }
+
+  // #region fields
+
+  get username() {
+    return this.form.controls.username;
+  }
+  get password() {
+    return this.form.controls.password;
+  }
+  get confirm() {
+    return this.form.controls.confirm;
+  }
+  get mobile() {
+    return this.form.controls.mobile;
+  }
+  get captcha() {
+    return this.form.controls.captcha;
+  }
+  form: FormGroup;
+  error = '';
+  type = 0;
+  visible = false;
+  status = 'pool';
+  progress = 0;
+  passwordProgressMap = {
+    ok: 'success',
+    pass: 'normal',
+    pool: 'exception',
+  };
+
+  // #endregion
+
+  // #region get captcha
+
+  count = 0;
+  interval$: any;
+
+  static checkPassword(control: FormControl) {
+    if (!control) {
+      return null;
+    }
+    const self: any = this;
+    self.visible = !!control.value;
+    if (control.value && control.value.length > 9) {
+      self.status = 'ok';
+    } else if (control.value && control.value.length > 5) {
+      self.status = 'pass';
+    } else {
+      self.status = 'pool';
+    }
+
+    if (self.visible) {
+      self.progress = control.value.length * 10 > 100 ? 100 : control.value.length * 10;
+    }
+  }
+
+  static passwordEquar(control: FormControl) {
+    if (!control || !control.parent) {
+      return null;
+    }
+    if (control.value !== control.parent.get('password').value) {
+      return { equar: true };
+    }
+    return null;
+  }
+
+  getCaptcha() {
+    if (this.mobile.invalid) {
+      this.mobile.markAsDirty({ onlySelf: true });
+      this.mobile.updateValueAndValidity({ onlySelf: true });
+      return;
+    }
+    this.count = 59;
+    this.interval$ = setInterval(() => {
+      this.count -= 1;
+      if (this.count <= 0) {
+        clearInterval(this.interval$);
+      }
+    }, 1000);
+
+    this.http.get('/sms/verify/code??_allow_anonymous=true', {
+      phone: this.form.value.mobile,
+    }).subscribe((res: any) => {
+      if (res.message !== 'success') {
+        this.error = res.message;
+        return;
+      }
+    });
+
+  }
+
+  // #endregion
+
+  submit() {
+    this.error = '';
+    Object.keys(this.form.controls).forEach((key) => {
+      this.form.controls[key].markAsDirty();
+      this.form.controls[key].updateValueAndValidity();
+    });
+    if (this.form.invalid) {
+      return;
+    }
+
+    const data = this.form.value;
+    this.http.post('/user/register?_allow_anonymous=true', {}, {
+      name: this.form.value.username,
+      pwd: this.form.value.password,
+      phone: this.form.value.mobile,
+      code: this.form.value.captcha,
+    }).subscribe((res: any) => {
+      if (res.message !== 'success'){
+        this.error = res.message;
+        return;
+      }
+      this.router.navigateByUrl('/passport/register-result', {
+        queryParams: { username: data.username },
+      });
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.interval$) {
+      clearInterval(this.interval$);
+    }
+  }
+}

@@ -1,0 +1,61 @@
+<div class="main">
+  <div class="left">
+    <form nz-form nzLayout="vertical" #f="ngForm" se-container="1">
+      <se label="账户ID">
+        <label>
+          <input nz-input [ngModel]="user?.id" disabled name="id" required />
+        </label>
+      </se>
+
+      <se label="账户名">
+        <label>
+          <input nz-input [ngModel]="user?.name" disabled name="name" required />
+        </label>
+      </se>
+
+      <se label="邮箱">
+        <label>
+          <input nz-input type="email" [ngModel]="user?.email" disabled name="email" />
+        </label>
+      </se>
+
+      <se label="联系电话">
+        <label>
+          <input nz-input [ngModel]="user?.phone" name="phone" disabled required />
+        </label>
+      </se>
+
+      <se label="昵称" error="请输入您的昵称!">
+        <label>
+          <input nz-input [ngModel]="user?.nickname" name="nickname" />
+        </label>
+      </se>
+      <se label="个人说明">
+        <label>
+          <textarea
+            nz-input
+            [ngModel]="user?.nickname"
+            name="nickname"
+            [nzAutosize]="{ minRows: 4, maxRows: 10 }"
+            placeholder=""
+          ></textarea>
+        </label>
+      </se>
+
+      <!--        <se>-->
+      <!--          <button nz-button nzType="primary" [disabled]="f.invalid">更新基本信息</button>-->
+      <!--        </se>-->
+    </form>
+  </div>
+
+  <div class="right">
+    <div class="avatar_title">头像</div>
+    <div class="avatar"><img src="../../../../../../assets/tmp/img/avatar.jpg" alt="头像" /></div>
+    <!--  <nz-upload nzAction="/src/assets/tmp/img" [nzShowUploadList]="true">-->
+    <!--    <button nz-button class="button_view">-->
+    <!--      <i nz-icon nzType="upload"></i>-->
+    <!--      <span>更换头像</span>-->
+    <!--    </button>-->
+    <!--  </nz-upload>-->
+  </div>
+</div>

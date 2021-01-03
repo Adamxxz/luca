@@ -1,0 +1,85 @@
+//@import "../../pro/account/center/security/security.component.less";
+//@import '~@delon/theme/index';
+.vehicle-management-tags button{
+  display: inline-block;
+  width: 150px;
+  height: 50px;
+  border: none;
+  text-align: center;
+}
+.video-card{
+  width: 250px;
+  margin-right: 20px;
+  background-color: slategray;
+  border: 1px solid slategray;
+  :hover{
+    cursor: pointer;
+  }
+}
+.video-card:hover{
+  border:1px solid white;
+}
+
+
+::ng-deep .vehicle-management-card{
+  border-top:none;
+  .ant-btn{
+    color:white;
+    background-color: #00d8ff;
+    border:1px solid white;
+  }
+  .ant-btn:hover{
+    border:1px solid #00eaff;
+  }
+  a{
+    color:blue;
+  }
+  a:hover{
+    color: #00eaff;
+  }
+}
+::ng-deep .vehicle-management-form{
+  .ant-radio-inner::after{
+    background-color: #00eaff;
+  }
+  .ant-radio-checked .ant-radio-inner{
+    border-color: #00eaff;
+  }
+}
+
+
+::ng-deep .vehicle-management-ant-modal .ant-modal{
+  padding-bottom: 0;
+  background-image: url("../../../../assets/tmp/img/b.png");
+  background-position: center;
+  background-size: 106% 106%;
+  height: auto;
+  .ant-modal-title{
+    color:#00d8ff;
+  }
+  .ant-modal-content{
+    background: none;
+    border: none;
+  }
+  .ant-modal-header{
+    background: none;
+    border-bottom: none;
+  }
+
+  .ant-form-item-label label{
+    color:white;
+  }
+
+  .ant-input:focus{
+    border:1px solid #005dff;
+  }
+
+  .ant-btn{
+    color:white;
+    background-color: #00d8ff;
+    border:1px solid #00eaff;
+  }
+  .ant-btn:hover{
+    border:1px solid white;
+  }
+}

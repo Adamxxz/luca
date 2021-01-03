@@ -55,7 +55,7 @@
     <nz-form-item>
       <nz-form-control [nzErrorTip]="confirmErrorTip">
         <nz-input-group class="right-infp-name" nzSize="large">
-          <input nz-input type="password" formControlName="confirm" />
+          <input nz-input type="password" formControlName="confirm"  placeholder="确认密码"/>
         </nz-input-group>
         <ng-template #confirmErrorTip let-i>
           <ng-container *ngIf="i.errors?.required">请确认密码！</ng-container>
@@ -86,7 +86,7 @@
         <nz-row [nzGutter]="8">
           <nz-col [nzSpan]="16">
             <nz-input-group class="right-infp-name" nzSize="large">
-              <input nz-input formControlName="captcha" placeholder="输入注册码" />
+              <input nz-input formControlName="captcha" placeholder="输入验证码" />
             </nz-input-group>
           </nz-col>
           <nz-col [nzSpan]="8">

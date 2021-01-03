@@ -1,5 +1,10 @@
 <!--修改密码弹页-->
-<nz-modal [(nzVisible)]="pwdVisible" [nzOkLoading]="pwdLoading" [nzTitle]="'密码修改'" (nzOnCancel)="pwdCancel()" (nzOnOk)="pwdOk()">
+<nz-modal [(nzVisible)]="pwdVisible"
+          [nzOkLoading]="pwdLoading"
+          [nzTitle]="'密码修改'"
+          [nzWrapClassName]="'pro-ant-modal'"
+          (nzOnCancel)="pwdCancel()"
+          (nzOnOk)="pwdOk()">
   <form nz-form [formGroup]="pwdForm">
     <nz-alert *ngIf="error" [nzType]="'error'" [nzMessage]="error" [nzShowIcon]="true" class="mb-lg"></nz-alert>
     <nz-form-item>
@@ -68,6 +73,7 @@
   [(nzVisible)]="phoneVisible"
   [nzOkLoading]="phoneLoading"
   [nzTitle]="'手机修改'"
+  [nzWrapClassName]="'pro-ant-modal'"
   (nzOnCancel)="phoneCancel()"
   (nzOnOk)="phoneOk()"
 >
@@ -115,6 +121,7 @@
     </nz-form-item>
   </form>
 </nz-modal>
+
 <nz-list nzItemLayout="horizontal">
   <nz-list-item [nzActions]="[passwordOp]">
     <ng-template #passwordOp>

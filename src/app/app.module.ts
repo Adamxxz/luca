@@ -100,6 +100,7 @@ import { LayoutModule } from './layout/layout.module';
 import { RoutesModule } from './routes/routes.module';
 import { SharedModule } from './shared/shared.module';
 import { STWidgetModule } from './shared/st-widget/st-widget.module';
+import { DelonFormModule } from "@delon/form";
 
 @NgModule({
   declarations: [
@@ -112,6 +113,7 @@ import { STWidgetModule } from './shared/st-widget/st-widget.module';
     GlobalConfigModule.forRoot(),
     NgxAmapModule.forRoot({apiKey: 'f82d3322f9e98540675d32b99de0e125'}),
     NgxEchartsModule.forRoot({ echarts }),
+    DelonFormModule.forRoot(),
     CoreModule,
     SharedModule,
     LayoutModule,

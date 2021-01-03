@@ -796,7 +796,7 @@ function ckplayerConfig() {
 					var loadJsHandler = function() {
 						thisTemp.embedHls(thisTemp.VA[0][0], v['autoplay']);
 					};
-					this.loadJs(javascriptPath + 'hls/hls.min.js', loadJsHandler);
+					this.loadJs(javascriptPath + 'assets/ckplayer/hls/hls.min.js', loadJsHandler);
 				}
 				this.css(this.V, 'backgroundColor', '#000000');
 				//创建一个画布容器

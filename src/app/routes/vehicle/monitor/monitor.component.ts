@@ -7,31 +7,27 @@ import {
   Optional
 } from '@angular/core';
 import {SettingsService, _HttpClient} from '@delon/theme';
-import {NzMessageService, NzModalService, NzTreeModule} from 'ng-zorro-antd';
-import { NgxAmapModule } from 'ngx-amap';
+import {NzMessageService, NzModalService} from 'ng-zorro-antd';
 declare const AMap: any;
-declare var ckplayer: any;
-declare var EZUIPlayer: any;
-// declare var GPS: any;
-// import {error, utf8Encode} from "@angular/compiler/src/util";
-// import { HostListener } from "@angular/core";
-import { ElementRef } from '@angular/core';
 import {FormBuilder} from '@angular/forms';
 import {Router} from '@angular/router';
-import {DA_SERVICE_TOKEN, ITokenService, SocialService} from '@delon/auth';
-import { NgxEchartsModule } from 'ngx-echarts';
-
+import {DA_SERVICE_TOKEN, ITokenService} from '@delon/auth';
+import * as THREE from "three";
+import {Vector3, WebGLRenderer, WebGLRenderTarget} from "three";
+import { FBXLoader} from "three/examples/jsm/loaders/FBXLoader";
+import { OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 
 
 @Component({
-  selector: 'app-vehicle-management',
+  selector: 'app-vehicle-monitor',
   templateUrl: './monitor.component.html',
   styleUrls: ['./monitor.component.less'],
   changeDetection: ChangeDetectionStrategy.Default,
 })
 export class VehicleMonitorComponent implements OnInit {
 
-
+  MeshLine = require('../../../../assets/three/meshline.js');
+  ckplayer = require('../../../../assets/ckplayer/ckplayer.js');
 
   constructor(
     fb: FormBuilder,
@@ -42,23 +38,29 @@ export class VehicleMonitorComponent implements OnInit {
     @Optional()
     @Inject(DA_SERVICE_TOKEN) private tokenService: ITokenService,
     public http: _HttpClient,
-    public msg: NzMessageService
+    public msg: NzMessageService,
   ) {}
+
+
   city = '潍坊';
-
-
   windowWidth: number;
-  player: any;
+  player1: any;
+  player2: any;
+  player3:any;
+  player4:any;
+  src1: any;
+  src2: any;
   error = '';
   vehicles = [];
-  timer$: any;
+  infoInterval: any;
+  laneTimeout:any;
+  laneInterval: any;
   charInstance: any;
   noticeMsg: string;
   map: any;
   @Input() center: number[];
   @Input() speed: number;
   @Input() address: any;
-  videoRtmp: any;
   vehicleData: any;
   vehicleState: any;
 
@@ -71,6 +73,7 @@ export class VehicleMonitorComponent implements OnInit {
       show: false,
     },
     series: [
+
       {
         name: '速度',
         type: 'gauge',
@@ -78,7 +81,7 @@ export class VehicleMonitorComponent implements OnInit {
         max: 200,
         splitNumber: 10,
         radius: '50%',
-        center: ['48.5%' , '35%'],
+        center: ['48.5%' , '30%'],
         axisLine: {            // 坐标轴线
           lineStyle: {       // 属性lineStyle控制线条样式
             color: [[0.1, 'lime'], [0.7, '#1e90ff'], [1, '#ff4500']],
@@ -217,7 +220,7 @@ export class VehicleMonitorComponent implements OnInit {
       {
         name: '刹车',
         type: 'gauge',
-        center: ['82%', '35%'],    // 默认全局居中
+        center: ['81%', '35%'],    // 默认全局居中
         radius: '40%',
         min: 0,
         max: 100,
@@ -291,7 +294,7 @@ export class VehicleMonitorComponent implements OnInit {
       {
         name: '挡位',
         type: 'gauge',
-        center: ['48.5%', '82%'],    // 默认全局居中
+        center: ['82%', '82%'],    // 默认全局居中
         radius: '40%',
         min: 0,
         max: 14,
@@ -358,17 +361,78 @@ export class VehicleMonitorComponent implements OnInit {
       },
     ]
   };
+
   pcVisible = false;
   pcWindow = false;
   plateNo: any;
   mobileWindow = false;
   mobileVisible = false;
+  vin: any;
+  historyVisible: boolean = false;
 
   // private Amap: any;
 
 // 监控页面加载
+  L4Window:boolean = false;
+  lane:any;
+
+  L4Play(vehicle) {
+    const isMobile = this.settingsService.user.isMobile;
+    if (isMobile){
+      this.mobileVisible = true;
+      this.L4Window = true;
+    }else{
+      this.pcVisible = true;
+      this.L4Window = true;
+    }
+
+    this.vin = vehicle[4][1].toString();
+    this.plateNo = vehicle[0][1];
+    const liveUrl = '/vehicle/lives/' + this.vin;
+    let liveErr = '';
+    if (this.vin){
+      liveErr = '获取主机视频信息失败，请检查视频主机是否正常';
+    }else{
+      liveErr = '此车辆未绑定视频主机';
+    }
+
+    this.http.get(liveUrl,{},{withCredentials:true}).subscribe((liveRes) => {
+      if (liveRes.message !== 'success'){
+        this.error = liveRes.message;
+        this.msg.error(this.error + liveErr);
+        return;
+      }
+      let url1 = liveRes.result[0].liveAddress.replace(/http/,"https");
+      let url2 = liveRes.result[1].liveAddress.replace(/http/,"https");
+      let videoObject3 = {
+        container: '#player3',
+        variable: 'player3',
+        autoplay: true,
+        live:true,
+        poster:"../../../../assets/logoV.png",
+        html5m3u8:true,
+        mobileAutoFull: false,
+        video:url1,
+      };
+      this.player3 = new ckplayer(videoObject3);
+      let videoObject4 = {
+        container: '#player4',
+        variable: 'player4',
+        autoplay: true,
+        live:true,
+        poster:"../../../assets/logoV.png",
+        html5m3u8:true,
+        mobileAutoFull: false,
+        video:url2,
+      };
+      this.player4 = new ckplayer(videoObject4);
+    }
+  )}
+
+
   monitorPlay(vehicle){
-    const isMobile = this.isMobile();
+
+    const isMobile = this.settingsService.user.isMobile;
     if (isMobile){
       this.mobileVisible = true;
       this.mobileWindow = true;
@@ -380,67 +444,75 @@ export class VehicleMonitorComponent implements OnInit {
     }
     const that = this;
     this.windowWidth = window.screen.width;
-    const vin = vehicle[4][1].toString();
+    this.vin = vehicle[4][1].toString();
     this.plateNo = vehicle[0][1];
+    // let el = document.getElementById("laneDraw");
+    // let scene = this.createScene(el);
     let liveErr = '';
-    if (vin){
+    if (this.vin){
       liveErr = '获取主机视频信息失败，请检查视频主机是否正常';
     }else{
       liveErr = '此车辆未绑定视频主机';
     }
-    const liveUrl = '/vehicle/live/' + vin;
-    this.http.get(liveUrl).subscribe((liveRes) => {
+    const liveUrl = '/vehicle/lives/' + this.vin;
+    this.http.get(liveUrl,{},{withCredentials:true}).subscribe((liveRes) => {
       if (liveRes.message !== 'success'){
         this.error = liveRes.message;
         this.msg.error(this.error + liveErr);
         return;
       }
-      // let videoObject = {
-      //   container: '#video',
-      //   variable: 'player',
-      //   autoplay: true,
-      //   live: true,
-      //   html5m3u8: true,
-      //   mobileAutoFull: false,
-      //   poster: '../../../../assets/logoV.png',
-      //   video: '',
-      // };
-      console.log(liveRes);
-      let url0, url1, url2;
-      if (isMobile){
-        url1 = liveRes.result.liveAddress;
-        url2 = liveRes.result.hdAddress;
-      }else{
-        url1 = 'ezopen://open.ys7.com/' + liveRes.result.deviceSerial + '/' + liveRes.result.channelNo + '.hd.live';
-        // url2 = liveRes.result.hdAddress;
-        url0 = url1 + ',' + 'ezopen://open.ys7.com/E33195716/1.hd.live';
-      }
-      const url3 = 'ezopen://open.ys7.com/' + 'E45192274' + '/' + '1' + '.hd.live';
-      this.player = new EZUIPlayer({
-        id: 'videoE',
-        url: url3,
-        autoplay: true,
-        accessToken: 'at.8kb24e3daq7zq8m42q0wt4t21a5whp2c-7p1vm5mtsb-1jeivuu-ovqdxozgu',
-        decoderPath: '../../../assets/EZUIKit',
-        poster: '../../../../assets/logoV.png',
-        // splitBasis:2,
-      });
-      // this.player.play();
 
-      // this.player = new ckplayer(videoObject);
+      let cameras = liveRes.result;
+      let src1,src2;
+      if(this.plateNo =="潍柴L4测试"){
+        src1 = "http://hls01open.ys7.com/openlive/b38dd1aa27f24460bdf9d0134be8ed3f.m3u8";
+        src2 = "http://hls01open.ys7.com/openlive/3606f6b8fe7d4e67bbde76a1ede6bd9f.m3u8";
+      }else{
+        src1 = cameras[0].liveAddress.replace(/http/,"https");
+        src2 = cameras[1].liveAddress.replace(/http/,"https");
+      }
+
+
+      let videoObject1 = {
+        container: '#player1',//“#”代表容器的ID，“.”或“”代表容器的class
+        variable: 'player1',//该属性必需设置，值等于下面的new chplayer()的对象
+        autoplay: true,//自动播放
+        live:true,
+        poster:"../../../../assets/logoV.png",
+        html5m3u8:true,
+        mobileAutoFull: false,
+        video:src2//视频地址
+      };
+      this.player1 = new ckplayer(videoObject1);
+      let videoObject2 = {
+        container: '#player2',
+        variable: 'player2',
+        autoplay: true,
+        live:true,
+        poster:"../../../assets/logoV.png",
+        html5m3u8:true,
+        mobileAutoFull: false,
+        video:src1,
+      };
+      this.player2 = new ckplayer(videoObject2);
     });
 
 
 
     // 获取实时数据
-    const realUrl = '/vehicle/realtime/' + vin;
+    const realUrl = '/vehicle/realtime/' + this.vin;
     let timeP: any;
     let timeU: any;
     let tagOnline = 0;
     let tagSpeed = 0;
     let tagOpen = 0;
     let addInfo: any;
-    this.timer$ = setInterval(() => {
+    let scene = this.createScene();
+    //定时函数，保证scene创建完成之后再执行渲染
+    this.laneTimeout = setTimeout(()=>
+      this.laneDraw(scene),1000
+    );
+    this.infoInterval = setInterval(() => {
       this.http.get(realUrl).subscribe((res: any) => {
           if (tagOpen == 0){
             this.scrollItem('正在获取数据...', 'yellow');
@@ -448,34 +520,53 @@ export class VehicleMonitorComponent implements OnInit {
           }
           if (res.message !== 'success'){
             this.error = res.message;
-            this.scrollItem('数据获取失败！</br>' + this.error, 'red');
+            if(this.error == "token invalid"){
+              this.router.navigateByUrl('/passport/login').then(()=>
+                that.msg.error('登录超时，请重新登陆')
+              )
+            }else{
+              this.scrollItem('数据获取失败！</br>' + this.error, 'red');
+            }
+
           }else{
             if (tagOpen == 1){
               this.scrollItem('获取数据完成！', 'yellow');
               tagOpen = 2;
             }
             const realData = res.result;
-            const avg = realData.avg_fuel_csmpt;
-            const inst = realData.inst_fuel_csmpt;
-            const steer = realData.steer;
-            realData.avg_fuel_csmpt = avg == 0 ? 0 : (100 / avg).toFixed(2);
-            realData.inst_fuel_csmpt = inst == 0 ? 0 : (100 / inst).toFixed(2);
-            realData.steer = (steer * 180 / 3.1416).toFixed(2);
-            console.log(realData);
+            // console.log(realData);
             if (realData)  {
+              if(realData.lane){
+                this.lane = realData.lane;
+              }else{
+                this.scrollItem('未获取到车道线数据！', 'red');
+              }
+              const avg = realData.avg_fuel_csmpt;
+              const inst = realData.inst_fuel_csmpt;
+              const steer = realData.steer;
+              realData.avg_fuel_csmpt = avg == 0 ? 0 : (100 / avg).toFixed(2);
+              realData.inst_fuel_csmpt = inst == 0 ? 0 : (100 / inst).toFixed(2);
+              //设置方向盘
+              let wheel = document.getElementById("vehicle-wheel-image");
+              realData.steer = (steer * 180 / 3.1416).toFixed(2);
+              if(wheel){
+                wheel.style.transform = "rotate("+realData.steer+"deg)";
+              }
               // 坐标信息
               that.vehicleData = realData;
               timeP = that.timeForm(realData.timestamp);
               const centerOri = [realData.longitude, realData.latitude];
+              // console.log(realData);
               this.vehicleState = [
-                ['ACC', realData.acc],
-                ['LKA', realData.lka],
+                ['ACC', realData.acc,{'0':"未开启",'1':"使用中",'2':"准备就绪"},{'0':"red",'1':"green",'2':"blue"}],
+                ['LKA', realData.lka,{'0':"未开启",'1':"使用中",'2':"准备就绪"},{'0':"red",'1':"green",'2':"blue"}],
                 // ['CAMERA',realData.camera],
                 // ['ENGINE',realData.engine_state],
                 // ['IGNITION',realData.ignition_state],
-                ['LOC', realData.loc_state],
-                ['ONLINE', realData.online],
+                ['GPS', realData.loc_state,{'0':"开启",'1':"关闭",'3':'定位失败'},{'0':"green",'1':"red","3":"red"}],
+                ['ONLINE', realData.online,{true:"在线",false:"离线"},{true:"green",false:"red"}],
               ];
+
               AMap.convertFrom(centerOri, 'gps', function(status, result) {
                 that.center = result.locations[0];
                 AMap.plugin('AMap.Geocoder', function() {
@@ -484,7 +575,6 @@ export class VehicleMonitorComponent implements OnInit {
                       if (result.info == 'OK'){
                       that.address = result.regeocode.formattedAddress;
                       if (!realData.online){
-                        that.vehicleData.inst_fuel_csmpt = 0;
                         if (tagOnline == 0){
                           tagOnline = 1;
                           addInfo = '车辆已离线！</br>' +
@@ -521,7 +611,7 @@ export class VehicleMonitorComponent implements OnInit {
                         }
                       }
                     }else{
-                      addInfo = timeP + ': ' + result.info + '！，获取地址失败！';
+                      addInfo = timeP + ': ' + result.info + '！，获取地址失败！<br>'+'最后定位位置：'+that.address+'<br>';
                       that.scrollItem(addInfo, 'red');
                     }
                       timeU = realData.timestamp;
@@ -535,29 +625,27 @@ export class VehicleMonitorComponent implements OnInit {
               this.charInstance.setOption(this.boardOption, true);
           }else{
               tagOpen = 0;
-              this.scrollItem('数据初始化失败！', 'red');
-            // this.msg.error("未获取到车辆实时数据");
+              this.scrollItem('数据初始化失败！数据为空！', 'red');
           }
         }
         });
     }, 1000);
-
   }
 
-  onPluginsLoaded(mapObj: AMap.Map) {
-    const mousetool = new AMap.MouseTool(mapObj);
-    mousetool.marker(); // 使用鼠标工具，在地图上画标记点
-    const ruler = new AMap.RangingTool(mapObj);
-    ruler.turnOn();
-  }
+  // onPluginsLoaded(mapObj: AMap.Map) {
+  //   const mousetool = new AMap.MouseTool(mapObj);
+  //   mousetool.marker(); // 使用鼠标工具，在地图上画标记点
+  //   const ruler = new AMap.RangingTool(mapObj);
+  //   ruler.turnOn();
+  // }
 
   ngOnInit() {
     this.http.get('/vehicle/viewable')
       .subscribe((res: any) => {
         if (res.message !== 'success'){
           this.error = res.message;
-          this.msg.error(this.error);
           if (res.code == 4000){
+            this.msg.error('登录超时，请重新登录');
             this.router.navigateByUrl('/passport/login');
           }
           return;
@@ -592,20 +680,6 @@ export class VehicleMonitorComponent implements OnInit {
     this.map = $event;
   }
 
-  isMobile(){
-    const userAgentInfo = navigator.userAgent;
-    const mobileAgents = [ 'Android', 'iPhone', 'iPad', 'iPod', 'SymbianOS', 'Windows Phone', 'Silk', 'BlackBerry', 'Opera Mini', 'IEMobile'];
-    let flag = false;
-    // 根据userAgent判断是否是手机
-    for (let v = 0; v < mobileAgents.length; v++) {
-      if (userAgentInfo.indexOf(mobileAgents[v]) > 0) {
-        flag = true;
-        break;
-      }
-    }
-    return flag;
-  }
-
 
   timeForm(timeP){
     const year = this.doubleStr(new Date(timeP).getUTCFullYear());
@@ -634,21 +708,311 @@ export class VehicleMonitorComponent implements OnInit {
 
   pcCancel($event) {
     if ($event.target.className == 'hmi-modal ng-star-inserted'){
+
+      this.historyVisible = false;
+      this.L4Window = false;
       this.pcWindow = false;
       this.pcVisible = false;
-      clearInterval(this.timer$);
+
+      window.clearInterval(this.laneInterval);
+      window.clearTimeout(this.laneTimeout);
+      window.clearInterval(this.infoInterval);
+    }
+   }
+
+
+  mobileCancel() {
+    clearInterval(this.infoInterval);
+    clearInterval(this.laneTimeout);
+    clearInterval(this.laneInterval);
+    this.mobileWindow = false;
+    this.mobileVisible = false;
+    this.L4Window = false;
+    this.historyVisible = false;
+  }
+
+  lineArr: any;
+  myMarker:any;
+  endMarker:any;
+  startValue: any;
+  endValue: any;
+  historyState:any;
+  endOpen: boolean = false;
+
+  disabledStartDate = (startValue:Date):boolean =>{
+    if(!startValue||!this.endValue){
+      return false;
+    }
+    return startValue.getTime()>this.endValue.getTime();
+  };
+
+  disabledEndDate = (endValue:Date):boolean=>{
+    if(!endValue||!this.startValue){
+      return  false;
+    }
+    return endValue.getTime()<= this.startValue.getTime();
+  };
+
+
+
+  historyShowInit() {
+    this.historyVisible = !this.historyVisible;
+    this.historyState = "默认显示当前时间前1小时轨迹\n";
+    this.myMarker=null;
+    this.lineArr=[];
+    let currentTime = new Date().getTime();
+    this.endValue = this.timeForm(currentTime);
+    this.startValue = this.timeForm(currentTime-3600000);
+    this.historyShow();
+  }
+
+
+  historyShow() {
+    let timeBegin = this.startValue;
+    let timeEnd = this.endValue;
+    let url = "/vehicle/historyPos/"+this.vin+"/"+timeBegin+"/"+timeEnd;
+    this.http.get(url).subscribe((posArr)=>{
+      this.lineArr = posArr.result;
+      if(posArr.result.time){
+          this.historyState = this.historyState+'\n'+timeBegin+"至"+timeEnd+"车辆离线状态,显示最后离线位置";
+          this.lineArr = [[posArr.result.longitude,posArr.result.latitude]]
+      }
+      let lengthArr = this.lineArr.length;
+      let map = new AMap.Map("history-map", {
+        resizeEnable: true,
+        center: this.lineArr[0],
+        zoom: 17,
+        viewMode:"3D",
+      });
+
+      this.myMarker = new AMap.Marker({
+        map: map,
+        position: this.lineArr[0],
+        icon: "https://webapi.amap.com/images/car.png",
+        offset: new AMap.Pixel(-26, -13),
+        autoRotation: true,
+        angle:-90,
+      });
+
+      this.endMarker = new AMap.Marker({
+        map: map,
+        position: this.lineArr[lengthArr-1],
+        icon: "https://webapi.amap.com/images/5.png",
+        autoRotation: true,
+      });
+      // 绘制轨迹
+      let polyline = new AMap.Polyline({
+        map: map,
+        path: this.lineArr,
+        showDir:true,
+        strokeColor: "#28F",  //线颜色
+        // strokeOpacity: 1,     //线透明度
+        strokeWeight: 6,      //线宽
+        // strokeStyle: "solid"  //线样式
+      });
+
+      let passedPolyline = new AMap.Polyline({
+        map: map,
+        // path: lineArr,
+        strokeColor: "#AF5",  //线颜色
+        // strokeOpacity: 1,     //线透明度
+        strokeWeight: 6,      //线宽
+        // strokeStyle: "solid"  //线样式
+      });
+
+
+      this.myMarker.on('moving', function (e) {
+        passedPolyline.setPath(e.passedPath);
+      });
+
+      map.setFitView();
+
+      this.myMarker.on('click',function (e) {
+      })
+
+    },(err)=>{
+      this.msg.error(err);
+    })
+  }
+
+  historyCancel() {
+    this.historyVisible = false;
+  }
+
+  startAnimation (marker,lineArr) {
+    if(marker&&lineArr){
+      marker.moveAlong(lineArr, 500,function (num) {
+        return num;
+      });
+    }else{
+      this.msg.error("请先选择时间确定路径")
+    }
+  }
+
+  pauseAnimation (marker) {
+    if(marker){
+      marker.pauseMove();
+    }
+  }
+
+  resumeAnimation (marker) {
+    if(marker){
+      marker.resumeMove();
+    }
+  }
+
+  stopAnimation (marker) {
+    if(marker){
+      marker.stopMove();
     }
   }
 
 
-  mobileCancel() {
-    this.mobileWindow = false;
-    this.mobileVisible = false;
-    clearInterval(this.timer$);
+
+  onOk(result: Date | Date[] | null): void {
+    let currentT = new Date().getTime();
+    let startT = result[0].getTime();
+    let endT = result[1].getTime();
+    if(startT>currentT||startT>=endT){
+      this.historyState = "起止时间不正确，请选择正确的时间段";
+    }else{
+      this.startValue = this.timeForm(startT);
+      this.endValue = this.timeForm(endT);
+      this.historyState = "";
+      this.historyShow();
+    }
   }
 
-  fullscreenX() {
-    console.log(document.getElementsByClassName('ant-modal-content'));
+  createScene(){
+    let scene = new THREE.Scene();
+    // 创建地面对象
+    let gg = new THREE.PlaneGeometry( 40, 80 );
+    let gm = new THREE.MeshPhongMaterial( { color: "black" } );
+    let ground = new THREE.Mesh( gg, gm );
+    ground.rotation.x =  -Math.PI/2;
+    scene.add(ground);
+    ground.geometry.dispose();
+    ground.material.dispose();
+    gg.dispose();
+    gm.dispose();
+
+    // 点光源
+    var point = new THREE.PointLight('white');
+    point.position.set(-80, 80, 0);
+    scene.add(point);
+    // 环境光
+    let ambient = new THREE.AmbientLight(0x444444);
+    scene.add(ambient);
+    // 加载货车对象
+    let sPoint = new Vector3(0,1,0);
+    let fbxLoader = new FBXLoader();
+    fbxLoader.load('../../../assets/three/simTruck.fbx',function (fbx) {
+      fbx = fbx.rotateOnWorldAxis(sPoint,-Math.PI/2);
+      scene.add(fbx);
+      fbx.scale.set(0.0004,0.0003,0.0002);
+      fbx.position.set(-4,0,0);
+     fbx.children[1].children[0].children.map((mesh)=>{
+       mesh.remove();
+     })
+    });
+    scene.matrixAutoUpdate = true;
+    return scene;
   }
+
+  laneDraw(scene){
+    let el = document.getElementById("laneDraw");
+    //车道线颜色
+    let laneColor = {
+      '0':'white',
+      '1':'yellow',
+      '2':'red',
+      '3':'blue',
+      '6':'white',
+      '7':'white',
+    };
+    let renderer = new THREE.WebGLRenderer();
+    let width = el.clientWidth; //窗口宽度
+    let height = el.clientHeight; //窗口高度
+    let k = width / height; //窗口宽高比
+    // let s = 100; //三维场景显示范围控制系数，系数越大，显示的范围越大
+    let camera = new THREE.PerspectiveCamera(80,  k,0.1,100);
+    camera.position.set(-7, 1.8,0 ); //设置相机位置
+    camera.lookAt(scene.position); //设置THREE.PerspectiveCamera相机方向(指向的场景对象)
+
+    renderer.setClearColor("white", 1); //设置背景颜色
+    el.appendChild(renderer.domElement); //el元素中插入canvas对象
+
+    function render() {
+      let width = el.clientWidth; //窗口宽度
+      let height = el.clientHeight; //窗口高度
+      renderer.setSize(width, height);//设置渲染区域尺寸
+      renderer.render(scene,camera);//执行渲染操作
+      requestAnimationFrame(render);
+      renderer.dispose();
+      // .rotateY(0.001*t);//旋转角速度0.001弧度每毫秒
+      // requestAnimationFrame(render);
+    }
+    //车道线数据lane（A,B,C,D,置信度，虚实）
+    this.laneInterval = setInterval(()=>{
+      scene.children = [scene.children[0],scene.children[1],scene.children[2],scene.children[3]];
+      if(this.lane){
+        //加载车道线
+        for(let i=0;i<=3;i++){
+          //根据置信度判断是否画出车道线
+          if(this.lane[i][4]>=80){
+            let color = laneColor[this.lane[i][5]];
+            let A = this.lane[i][0];
+            let B = this.lane[i][1];
+            let C = this.lane[i][2];
+            let D = this.lane[i][3];
+            let geometry = new THREE.Geometry();
+            for(let j=-5;j<20;j++){
+              let Z = this.pointPath(A,B,C,D,j);
+              let point = new THREE.Vector3(j,0,Z);
+              geometry.vertices.push(point);
+            }
+            // let curve = new THREE.CatmullRomCurve3(myPoints);
+            // let CurvePath = new THREE.CurvePath();
+            // CurvePath.curves.push(curve);
+            // let geometry = new THREE.Geometry();
+            // let points = CurvePath.getPoints(50);
+            // geometry.setFromPoints(points);
+            // let line = new THREE.Line(geometry,material);
+            // line.computeLineDistances();
+            // scene.add(line);
+            let line = new this.MeshLine.MeshLine();
+            line.setGeometry(geometry);
+            geometry.dispose();
+            let material = new this.MeshLine.MeshLineMaterial({
+              color:color,
+              // sizeAttenuation:true,
+              lineWidth:0.05
+            });
+            let myLine = new THREE.Mesh(line.geometry,material);
+            material.dispose();
+            line.geometry.dispose();
+            scene.add(myLine);
+            myLine.geometry.dispose();
+            myLine.material.dispose();
+            myLine.remove();
+          }else{
+            // console.log("lane"+i+"置信度为："+this.lane[i][4])
+          }
+        }
+      }
+      // renderer = null;
+    },1000);
+    render();
+    let controls = new OrbitControls(camera,renderer.domElement);
+    // controls.addEventListener('change', render);
+  }
+
+  pointPath(A,B,C,D,X:number):number{
+    A = A*Math.pow(X,3);
+    B = B*Math.pow(X,2);
+    C = C*X;
+    return A+B+C+D;
+  }
+
 }
 

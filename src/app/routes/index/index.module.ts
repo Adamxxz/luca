@@ -3,6 +3,7 @@ import { SharedModule } from '@shared';
 import { NzCarouselModule } from 'ng-zorro-antd';
 import { IndexRoutingModule } from './index-routing.module';
 import { IndexPageComponent } from './page/page.component';
+import {LayoutModule} from "../../layout/layout.module";
 
 const COMPONENTS = [
   IndexPageComponent];
@@ -12,7 +13,8 @@ const COMPONENTS_NOROUNT = [];
   imports: [
     SharedModule,
     IndexRoutingModule,
-    NzCarouselModule
+    NzCarouselModule,
+    LayoutModule
   ],
   declarations: [
     ...COMPONENTS,

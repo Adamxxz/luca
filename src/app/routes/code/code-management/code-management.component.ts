@@ -1,50 +1,79 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy, ChangeDetectorRef,
+  Component, ElementRef,
+  OnDestroy
+} from '@angular/core';
+import {ActivationEnd, Router} from '@angular/router';
 import { STColumn, STComponent } from '@delon/abc/st';
-import { SFSchema } from '@delon/form';
+// import { SFSchema } from '@delon/form';
 import { ModalHelper, _HttpClient } from '@delon/theme';
-import { NzModalService } from 'ng-zorro-antd';
-import {LayoutCommonModalComponent } from '../../../layout/common/modal/modal.component';
+import {fromEvent, Subscription} from 'rxjs';
+import {debounceTime, filter} from 'rxjs/operators';
 
 @Component({
-  selector: 'app-code-code-management',
+  selector: 'app-code-management',
   templateUrl: './code-management.component.html',
+  styleUrls: ['./code-management.component.less'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CodeCodeManagementComponent implements OnInit {
-  url = `/user`;
-  searchSchema: SFSchema = {
-    properties: {
-      no: {
-        type: 'string',
-        title: '编号'
-      }
-    }
-  };
-  @ViewChild('st', { static: false }) st: STComponent;
-  columns: STColumn[] = [
-    { title: '编号', index: 'no' },
-    { title: '调用次数', type: 'number', index: 'callNo' },
-    { title: '头像', type: 'img', width: '50px', index: 'avatar' },
-    { title: '时间', type: 'date', index: 'updatedAt' },
+export class CodeManagementComponent implements AfterViewInit, OnDestroy {
+  private resize$: Subscription;
+  private router$: Subscription;
+  mode = 'horizontal';
+  title: string;
+  user: any;
+  menus: any[] = [
     {
-      title: '',
-      buttons: [
-        // { text: '查看', click: (item: any) => `/form/${item.id}` },
-        // { text: '编辑', type: 'static', component: FormEditComponent, click: 'reload' },
-      ]
-    }
+      key: 'compilation',
+      title: '远程编译',
+    },
+    {
+      key: 'brushing',
+      title: '远程刷写',
+    },
   ];
 
-  constructor(
-    private http: _HttpClient,
-    private modal: ModalHelper,
-    public modalService: NzModalService) { }
-
-  ngOnInit() { }
-
-  add() {
-    this.modal
-      .createStatic(LayoutCommonModalComponent, { i: { id: 0 } })
-      .subscribe(() => this.st.reload());
+  constructor(private router: Router,
+              private cdr: ChangeDetectorRef,
+              private el: ElementRef) {
+    this.router$ = this.router.events.pipe(filter(e => e instanceof ActivationEnd)).subscribe(() => this.setActive());
   }
 
+  private setActive() {
+    const key = this.router.url.substr(this.router.url.lastIndexOf('/') + 1);
+    this.menus.forEach(i => {
+      i.selected = i.key === key;
+    });
+    this.title = this.menus.find(w => w.selected).title;
+  }
+
+  to(item: any) {
+    this.router.navigateByUrl(`/code/code-management/${item.key}`);
+  }
+
+  private resize() {
+    const el = this.el.nativeElement as HTMLElement;
+    let mode = 'vertical';
+    const { offsetWidth } = el;
+    if (offsetWidth < 641 && offsetWidth > 400) {
+      mode = 'horizontal';
+    }
+    if (window.innerWidth < 768 && offsetWidth > 400) {
+      mode = 'horizontal';
+    }
+    this.mode = mode;
+    this.cdr.detectChanges();
+  }
+
+  ngAfterViewInit(): void {
+    this.resize$ = fromEvent(window, 'resize')
+      .pipe(debounceTime(200))
+      .subscribe(() => this.resize());
+  }
+
+  ngOnDestroy(): void {
+    this.resize$.unsubscribe();
+    this.router$.unsubscribe();
+  }
 }

@@ -1,13 +1,27 @@
-<div>
-  <nz-carousel nzAutoPlay>
-    <div nz-carousel-content class="index-page-carousel" *ngFor="let i of indexImgs">
-      <img src="../../../../assets/images/index/{{ i }}.png" alt="" />
-      <div class="index-page-carousel-item">
-        <div class="index-page-carousel-title">
-          <h1>SINOPILOT</h1>
-        </div>
-        <div class="index-page-carousel-content"></div>
-      </div>
+
+  <div class="index-page">
+    <div class="index-page-carousel-title">
+      <h1>智能网联协同研发平台</h1>
     </div>
-  </nz-carousel>
-</div>
+    <nz-carousel nzAutoPlay>
+      <div nz-carousel-content class="index-page-carousel" *ngFor="let i of indexImgs">
+        <img style="" src="../../../../assets/images/index/{{ i }}.jpg" alt="" />
+        <div class="index-page-carousel-item">
+          <div class="index-page-carousel-content">
+            <div class="info-title">
+              <h1>{{indexInfo[i-1][0]}}</h1>
+            </div>
+            <div class="info-content">
+              {{indexInfo[i-1][1]}}<br>
+              <a routerLink="{{indexInfo[i-1][2]}}" style="float:right">
+                more <i nz-icon nzType="right" style="color:white"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nz-carousel>
+    <nz-carousel>
+    </nz-carousel>
+  </div>
+

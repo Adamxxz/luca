@@ -8,7 +8,18 @@ header-fullscreen:hover{
   color:white;
 }
 
+::ng-deep .history-show {
+  .cdk-overlay-pane{
+    width: 100%;
+  }
+  .ant-btn-primary{
+    background: #1E9FFF;
+  }
+
+}
+
 .vehicle-card{
+  float:left;
   width:300px;
   margin-right: 20px ;
   padding: 20px 0;
@@ -46,7 +57,7 @@ header-fullscreen:hover{
   _position:absolute;
   top: 50%;
   left: 50%;
-  z-index:1011;
+  z-index:666;
   width: 1200px;
   height: 675px;
   margin-top:-338px;
@@ -72,7 +83,7 @@ header-fullscreen:hover{
   float:left;
   width:40%;
   height:250px;
-  margin: 0 5% 0 7%;
+  margin: 0 0 0 5%;
   overflow: hidden;
   border: 3px solid #2D2F37;
   border-radius: 5%;
@@ -84,32 +95,130 @@ header-fullscreen:hover{
   height: 100%;
 }
 
-.vehicle-video{
-  width: 40%;
-  height: 250px;
-  margin: 0 0 0 8%;
+.vehicle-map-card{
+  position: absolute;
+  background: rgba(0,0,0,0);
+  border:none;
+  margin-top: -60px;
+  margin-left: 27%;
+}
+
+.vehicle-map-card button{
+  color: white;
+  font-size: 14px;
+  height: 35px;
+  width: 100%;
+  border: none;
+  background: #1E9FFF;
+}
+
+.history-show{
+  position: absolute;
+  background: white;
+  //overflow: hidden;
+  height: 400px;
+  width: 600px;
+  left: 50%;
+  margin-left: -300px;
+  z-index: 1001;
+}
+
+#history-map {
+  height: 100%;
+  width: 100%;
+}
+
+.history-show-state{
+  position: absolute;
+  color: black;
+  font-size: 12px;
+  height: 80px;
+  border: 1px solid #8D8D8D;
+  margin: -80px 0 0 450px;
+  background: white;
+}
+
+.history-control-card{
+  width: 70%;
+  margin:-300px 0 0 0;
+}
+.history-control-card button{
+  margin: 0;
+  background: #1E9FFF ;
+  box-shadow: 1px 1px 2px 1px slategrey;
+}
+
+.history-time-select{
+  position: absolute;
+  width: 100%;
+  height:30px;
+  margin: -400px 0 0 0;
+  text-align: center;
+}
+.vehicle-videos-l4{
+  width: 80%;
+  height: 400px;
+  margin-left: 10%;
   overflow: hidden;
   border: 3px solid black;
   border-radius: 5%;
-  box-shadow: -5px -5px 10px 5px slategray ,5px 5px 10px 5px slategray;
+  box-shadow: -5px -5px 10px 5px slategray,5px 5px 10px 5px slategray;
 }
+
+
+.vehicle-videos{
+  float:left;
+  width: 45%;
+  height: 250px;
+  margin-left: 5%;
+  overflow: hidden;
+  border: 3px solid black;
+  border-radius: 5%;
+  box-shadow: -5px -5px 10px 5px slategray,5px 5px 10px 5px slategray;
+}
+
+.vehicle-video1{
+  float:left;
+  width: 50%;
+  height: 100%;
+}
+
+#laneDraw{
+  float: left;
+  width: 100%;
+  height: 180px;
+  background: black;
+}
+
 .view-vehicleInfoLeft{
   float:left;
-  width:25%;
+  width:27%;
   height: auto;
   //background: white;
-  margin: 2% 0 0 8%
+  margin-top: 10px;
+  margin-left: 5%;
 }
+.vehicleInfoRight-card{
+  background: #3d3d3d;
+  height: 50px;
+  font-size: 15px;
+  text-align: center;
+  margin-bottom: 10px;
+  box-shadow: 1px 1px 2px 1px slategrey;
+  border-radius: 5%;
+  color: white;
+}
+
 .left-item-title{
   margin-top: 10px;
   color: white;
-  font-size: 18px;
+  font-size: 14px;
   text-align: center
 }
 
 .vehicle-echarts{
   float:left;
-  width:35%;
+  width:100%;
   height:300px;
   margin-top: 20px;
   background:black;
@@ -117,8 +226,8 @@ header-fullscreen:hover{
 
 .view-vehicleInfoRight{
   float:left;
-  width:25%;
-  height: 300px;
+  width:27%;
+  //height: 300px;
   //background: white;
   margin-top: 20px;
 }
@@ -132,9 +241,10 @@ header-fullscreen:hover{
   color:white;
 }
 .left-itemInfo {
-  width:70%;
+  //width:70%;
   margin: 0 auto;
   color:white;
+  font-size: 16px;
   text-align: center;
   background: rgba(30,144,255,0.8);
   border: 1px solid black;
@@ -153,8 +263,8 @@ header-fullscreen:hover{
 
 .scroll-div{
   float: left;
-  height: 200px;
   margin-top: 10px;
+  height: 150px;
   overflow-x:hidden;
   overflow-y:auto;
   color:white;
@@ -174,25 +284,59 @@ header-fullscreen:hover{
   }
 }
 
-.state-exist{
+.state-blue{
   display: inline-block;
   width: 12px;
   height: 12px;
   margin-left: 2px;
-  background: green;
+  background: #3109fa;
   border-radius: 50%;
   box-shadow: 0 0 4px 2px slategray;
 }
-.state-lose{
+
+.state-green{
   display: inline-block;
   width: 12px;
   height: 12px;
   margin-left: 2px;
-  background: red;
+  background: #2bc619;
+  border-radius: 50%;
+  box-shadow: 0 0 4px 2px slategray;
+}
+.state-red{
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-left: 2px;
+  background: #ff0c2a;
   border-radius: 50%;
   box-shadow: 0 0 4px 2px slategray
 }
+.vehicle-charts{
+  float:left;
+  width: 35%;
+}
 
+.vehicle-wheel{
+  position: absolute;
+  width: 35%;
+  height: 300px;
+  text-align: center;
+}
+.vehicle-wheel-text{
+  color: white;
+  padding-top: 20px;
+}
+#vehicle-wheel-image{
+  background-image: url("../../../../assets/images/monitor/wheel.png");
+  width: 130px;
+  height: 130px;
+  margin-left: 33%;
+  margin-top: 45%;
+  background-size: 100% 100%;
+}
+
+//适配移动端
 @media screen and (max-width: 767px){
   ::ng-deep .hmi-mobile {
     .ant-modal{
@@ -217,7 +361,12 @@ header-fullscreen:hover{
         background: none;
       }
     }
+  }
 
+  ::ng-deep  {
+    .history-show .cdk-overlay-container{
+      z-index: 1200;
+    }
   }
 
 
@@ -229,10 +378,29 @@ header-fullscreen:hover{
     margin: 10% 0;
     overflow: hidden;
   }
-  .vehicle-video{
+  .vehicle-videos{
+    float:none;
     width: 100%;
-    height:200px;
     margin: 10% 0;
+    height: 100%;
+  }
+
+  .vehicle-videos-l4{
+    width:100%;
+    margin: 0 auto;
+  }
+
+  .vehicle-video1{
+    float:none;
+    width: 100%;
+    height: 50%;
+  }
+
+  #laneDraw{
+    float: none;
+    width: 100%;
+    height: 180px;
+    background: black;
   }
   .view-vehicleInfoLeft{
     float:none;
@@ -240,12 +408,29 @@ header-fullscreen:hover{
     margin: 10% 0;
     //background: white;
   }
+  .vehicle-charts{
+    float:none;
+    width: 100%;
+  }
 
   .vehicle-echarts{
     float:none;
     width:100%;
-    margin: 10% 0;
+    margin: 0;
   }
+  .vehicle-wheel{
+    position: relative;
+    width: 100%;
+    text-align: center;
+  }
+
+  #vehicle-wheel-image{
+    width: 150px;
+    height: 150px;
+    margin: 80px auto;
+    background-size: 100% 100%;
+  }
+
 
   .view-vehicleInfoRight{
     float:none;
@@ -255,6 +440,56 @@ header-fullscreen:hover{
   .view-vehicleInfo{
     float:none;
     width: 100%;
+  }
+
+  .vehicle-map-card{
+    position: relative;
+    background: rgba(0,0,0,0);
+    border:none;
+    margin: 0 auto;
+  }
+
+  .history-show{
+    position: relative;
+    background: white;
+    //overflow: hidden;
+    height: 400px;
+    width: 100%;
+    left: 0;
+    margin:60px 0 0 0;
+    z-index: 999;
+  }
+
+  #history-map {
+    position: relative;
+    float:left;
+    height: 100%;
+    width: 100%;
+  }
+
+  .history-time-select{
+    width: 100%;
+    height:30px;
+    margin-top: -35px;
+    text-align: center;
+  }
+
+  .history-control-card{
+    position: absolute;
+    float:none;
+    width: 100%;
+    margin-top: 60px;
+  }
+
+  .history-show-state{
+    position: relative;
+    float:right;
+    color: black;
+    font-size: 12px;
+    width: 30%;
+    border: 1px solid #8D8D8D;
+    margin: -80px 0 0 0;
+    background: white;
   }
 
   .vehicle-state{

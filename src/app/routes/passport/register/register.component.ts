@@ -87,6 +87,8 @@ export class UserRegisterComponent implements OnDestroy {
   }
 
   getCaptcha() {
+    console.log(this.count);
+    console.log(this.mobile.invalid);
     if (this.mobile.invalid) {
       this.mobile.markAsDirty({ onlySelf: true });
       this.mobile.updateValueAndValidity({ onlySelf: true });
@@ -98,13 +100,15 @@ export class UserRegisterComponent implements OnDestroy {
       if (this.count <= 0) {
         clearInterval(this.interval$);
       }
+      console.log('count',this.count)
     }, 1000);
 
-    this.http.get('/sms/verify/code??_allow_anonymous=true', {
+    this.http.get('/sms/verify/code?_allow_anonymous=true', {
       phone: this.form.value.mobile,
     }).subscribe((res: any) => {
       if (res.message !== 'success') {
         this.error = res.message;
+        console.log('error',res.message);
         return;
       }
     });

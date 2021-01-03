@@ -1,4 +1,16 @@
-<page-header [homeI18n]="'首页'"> </page-header>
-<nz-card>
-  版本更新中...敬请期待
-</nz-card>
+<!--<page-header [homeI18n]="'首页'"> </page-header>-->
+<div>
+    <div *ngFor="let item of otaItems" nz-row [nzGutter]="8">
+      <div nz-col [nzSpan]="8">
+        <nz-card style="width:400px;background-color: #1E9FFF;text-align: center;margin-top: 100px;font-size: 16px"
+                 [nzBordered]="false"
+                 [nzTitle] = "item.title"
+                 [routerLink]="item.url"
+        >
+          <p>{{item.details}}</p>
+        </nz-card>
+      </div>
+    </div>
+</div>
+
+

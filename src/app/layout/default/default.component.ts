@@ -1,4 +1,4 @@
-import { DOCUMENT } from '@angular/common';
+ import { DOCUMENT } from '@angular/common';
 import {
   AfterViewInit,
   Component,
@@ -11,7 +11,15 @@ import {
   ViewChild,
   ViewContainerRef,
 } from '@angular/core';
-import { NavigationCancel, NavigationEnd, NavigationError, RouteConfigLoadEnd, RouteConfigLoadStart, Router } from '@angular/router';
+import {
+  NavigationCancel,
+  NavigationEnd,
+  NavigationError,
+  RouteConfigLoadEnd,
+  RouteConfigLoadStart,
+  Router,
+  RouterLink
+} from '@angular/router';
 import { SettingsService } from '@delon/theme';
 import { updateHostClass } from '@delon/util';
 import { environment } from '@env/environment';
@@ -30,7 +38,6 @@ export class LayoutDefaultComponent implements OnInit, AfterViewInit, OnDestroy 
   @ViewChild('settingHost', { read: ViewContainerRef, static: true })
   private settingHost: ViewContainerRef;
   isFetching = false;
-
   constructor(
     router: Router,
     msgSrv: NzMessageService,

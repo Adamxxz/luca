@@ -5,80 +5,196 @@
   <div class="vehicle-card" *ngFor="let vehicle of vehicles">
     <h3 style="text-align: center; color: white; text-shadow: #00d8ff;">{{ vehicle[0][1] }}</h3>
     <div class="vehicle-info" *ngFor="let item of vehicle">{{ item[0] }} : {{ item[1] }}</div>
-
-    <button class="vehicle-card-button" (click)="monitorPlay(vehicle)">
+    <button *ngIf="vehicle[0][1]=='潍柴L4测试'" class="vehicle-card-button" (click)="L4Play(vehicle)">
+      打开监控界面
+    </button>
+    <button  *ngIf="vehicle[0][1]!='潍柴L4测试'" class="vehicle-card-button" (click)="monitorPlay(vehicle)">
       打开监控界面
     </button>
   </div>
 </div>
+<!--<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">-->
+
 
 <div *ngIf="pcVisible" class="hmi-modal" role="document" (click)="pcCancel($event)">
   <div class="my-modal" id="my-modal">
     <div class="my-modal-header">
-      SINOPILOT实时监控
+      车辆实时监控
       <header-fullscreen></header-fullscreen>
     </div>
     <div class="my-modal-content">
+      <div *ngIf="L4Window">
+        <div class="vehicle-videos-l4">
+          <div id='player3' class="vehicle-video1">
+          </div>
+          <div id="player4" class="vehicle-video1">
+          </div>
+        </div>
+      </div>
       <div *ngIf="pcWindow">
         <div class="vehicle-map">
-          <ngx-amap class="map-item" [center]="center" (naReady)="mapReady($event)" [resizeEnable]="true" [zoom]="13">
+          <ngx-amap #myMap class="map-item" [center]="center" (naReady)="mapReady($event)" [viewMode]="'3D'" [resizeEnable]="true" [zoom]="13">
             <amap-marker [position]="center"> </amap-marker>
           </ngx-amap>
+          <nz-card class="vehicle-map-card">
+            <button nz-button nzType="default"  (click)="historyShowInit()">历史记录查看</button>
+          </nz-card>
+
         </div>
         <!--        <div id="video" class="vehicle-video"></div>-->
-        <div id="videoE" class="vehicle-video" aria-controls webkit-playsinline></div>
-        <div class="view-vehicleInfoLeft">
-          <div class="left-item-title">
+        <div class="vehicle-videos">
+          <div id='player1' class="vehicle-video1">
+          </div>
+          <div id="player2" class="vehicle-video1">
+          </div>
+        </div>
+
+        <div nz-row  class="view-vehicleInfoLeft">
+
+          <div class="left-item-title" nz-col [nzSpan]="11">
             车牌号
             <div class="left-itemInfo" *ngIf="plateNo">{{ plateNo }}</div>
           </div>
-          <div class="left-item-title">
+          <div class="left-item-title" nz-col [nzSpan]="11" [nzOffset]="2">
             总里程(Km)
             <div class="left-itemInfo" *ngIf="vehicleData">{{ vehicleData.total_dist / 1000 }}</div>
           </div>
-          <div class="left-item-title">
+          <div class="left-item-title" nz-col [nzSpan]="11">
             平均油耗(L/100Km)
             <div class="left-itemInfo" *ngIf="vehicleData">{{ vehicleData.avg_fuel_csmpt }}</div>
           </div>
-          <div class="left-item-title">
+          <div class="left-item-title" nz-col [nzSpan]="11" [nzOffset]="2">
             瞬时油耗(L/100Km)
             <div class="left-itemInfo" *ngIf="vehicleData">{{ vehicleData.inst_fuel_csmpt }}</div>
           </div>
-        </div>
-
-        <div class="vehicle-echarts" echarts [options]="boardOption" (chartInit)="chartInit($event)" id="chartmain"></div>
-
-        <div class="view-vehicleInfoRight">
-          <div *ngIf="vehicleState" class="vehicle-state">
-            <div *ngFor="let item of vehicleState" class="vehicle-state-item">
-              {{ item[0] }} :
-              <div *ngIf="item[1] == 0 || !item[1]" class="state-{{ item[1] }}"></div>
-              <div *ngIf="item[1] != 0" class="state-exist"></div>
-            </div>
-          </div>
-          <div *ngIf="vehicleData" style="color: white;">STEER: {{ vehicleData.steer }}</div>
           <div id="scroll-div" class="scroll-div"></div>
         </div>
+        <div style="float:left;width: 36%" >
+          <div class="vehicle-echarts" echarts [options]="boardOption" (chartInit)="chartInit($event)" id="chartmain"></div>
+          <div class="vehicle-wheel">
+            <div id="vehicle-wheel-image">
+              <div class="vehicle-wheel-text" *ngIf="vehicleData" >{{vehicleData.steer}}</div>
+            </div>
+          </div>
+        </div>
+        <div class="view-vehicleInfoRight">
+
+          <div style="background: black">
+            <div *ngIf="vehicleState" nz-row [nzGutter]="8">
+              <div *ngFor="let item of vehicleState" style="padding: 0" nz-col [nzSpan]="8" [nzSm]="8">
+                <div class="vehicleInfoRight-card">
+                  <span class="state-{{item[3][item[1]]}}"></span> {{item[0]}}<br>
+                  <span style="font-size: 12px">{{item[2][item[1]]}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="laneDraw">
+
+          </div>
+        </div>
       </div>
+
+      <div *ngIf="historyVisible" class="history-show">
+        <div id="history-map"></div>
+        <div class="history-time-select">
+          <nz-range-picker
+            [nzShowTime]="{ nzFormat: 'HH:mm:ss' }"
+            nzFormat="yyyy-MM-dd HH:mm:ss"
+            [nzPlaceHolder]="['开始时间', '结束时间']"
+            ngModel
+            (nzOnOk)="onOk($event)"
+            nzShowToday
+          ></nz-range-picker>
+        </div>
+        <span class = history-show-state>{{historyState}}</span>
+        <div class="history-control-card">
+          <button nz-button nzType="default" nz-col [nzSpan]="6" (click)="startAnimation(myMarker,lineArr)">开始</button>
+          <button nz-button nzType="default" nz-col [nzSpan]="6" (click)="pauseAnimation(myMarker)">暂停</button>
+          <button nz-button nzType="default" nz-col [nzSpan]="6" (click)="resumeAnimation(myMarker)">继续</button>
+          <button nz-button nzType="default" nz-col [nzSpan]="6" (click)="stopAnimation(myMarker)">重置</button>
+          <br>
+          <button nz-button nzType="primary" nz-col [nzSpan]="6" (click)="historyCancel()">退出</button>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
 
+
+
+
+
 <nz-modal
   [(nzVisible)]="mobileVisible"
-  [nzTitle]="'SINOPILOT实时监控'"
+  [nzTitle]="'车辆实时监控'"
   [nzWrapClassName]="'hmi-mobile'"
   (nzOnCancel)="mobileCancel()"
   [nzFooter]="null"
 >
+  <div *ngIf="L4Window">
+    <div class="vehicle-videos-l4">
+      <div id='player3' class="vehicle-video1">
+      </div>
+      <div id="player4" class="vehicle-video1">
+      </div>
+    </div>
+  </div>
   <div *ngIf="mobileWindow">
     <div class="vehicle-map">
       <ngx-amap class="map-item" [center]="center" (naReady)="mapReady($event)" [resizeEnable]="true" [zoom]="13">
         <amap-marker [position]="center"> </amap-marker>
       </ngx-amap>
     </div>
+
     <!--    <div id="video" class="vehicle-video"></div>-->
-    <div id="video" class="vehicle-video" aria-controls webkit-playsinline></div>
+    <div class="vehicle-videos">
+      <div id='player1'  class="vehicle-video1">
+      </div>
+      <div id="player2"  class="vehicle-video1">
+      </div>
+    </div>
+
+    <div id="laneDraw">
+
+    </div>
+
+    <div class="vehicle-charts" >
+      <div class="vehicle-wheel">
+        <img id="vehicle-wheel-image" src="../../../../assets/images/monitor/wheel.png">
+      </div>
+      <div class="vehicle-echarts" echarts [options]="boardOption" (chartInit)="chartInit($event)" id="chartmain"></div>
+    </div>
+
+    <nz-card class="vehicle-map-card">
+      <button nz-button nzType="default"  (click)="historyShowInit()">历史轨迹查看</button>
+    </nz-card>
+
+    <div *ngIf="historyVisible" class="history-show">
+      <div id="history-map"></div>
+      <div class="history-time-select">
+        <nz-range-picker
+          [nzShowTime]="{ nzFormat: 'HH:mm:ss' }"
+          nzFormat="yyyy-MM-dd HH:mm:ss"
+          [nzPlaceHolder]="['开始时间', '结束时间']"
+          ngModel
+          (nzOnOk)="onOk($event)"
+          nzShowToday
+        ></nz-range-picker>
+      </div>
+      <span class = history-show-state>{{historyState}}</span>
+      <div class="history-control-card">
+        <button nz-button nzType="default" nz-col [nzSpan]="6" (click)="startAnimation(myMarker,lineArr)">开始</button>
+        <button nz-button nzType="default" nz-col [nzSpan]="6" (click)="pauseAnimation(myMarker)">暂停</button>
+        <button nz-button nzType="default" nz-col [nzSpan]="6" (click)="resumeAnimation(myMarker)">继续</button>
+        <button nz-button nzType="default" nz-col [nzSpan]="6" (click)="stopAnimation(myMarker)">重置</button>
+        <br>
+        <button nz-button nzType="primary" nz-col [nzSpan]="6" (click)="historyCancel()">退出</button>
+      </div>
+    </div>
+
     <div class="view-vehicleInfoLeft">
       <!--      <button (click)="fullscreenX()">最大化</button>-->
       <div class="left-item-title">
@@ -99,17 +215,19 @@
       </div>
     </div>
 
-    <div class="vehicle-echarts" echarts [options]="boardOption" (chartInit)="chartInit($event)" id="chartmain"></div>
+
 
     <div class="view-vehicleInfoRight">
-      <div *ngIf="vehicleState" class="vehicle-state">
-        <div *ngFor="let item of vehicleState" class="vehicle-state-item">
-          {{ item[0] }} :
-          <div *ngIf="item[1] == 0 || !item[1]" class="state-{{ item[1] }}"></div>
-          <div *ngIf="item[1] != 0" class="state-exist"></div>
+      <div style="background: black;padding:10px;">
+        <div *ngIf="vehicleState" nz-row [nzGutter]="8">
+          <div *ngFor="let item of vehicleState" style="padding: 0" nz-col [nzSpan]="8" [nzSm]="8">
+            <div class="vehicleInfoRight-card">
+              <span class="state-{{item[3][item[1]]}}"></span> {{item[0]}}<br>
+              <span style="font-size: 12px">{{item[2][item[1]]}}</span>
+            </div>
+          </div>
         </div>
       </div>
-      <div *ngIf="vehicleData" style="color: white;">STEER: {{ vehicleData.steer }}</div>
       <div id="scroll-div" class="scroll-div"></div>
     </div>
   </div>

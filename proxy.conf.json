@@ -23,5 +23,17 @@
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
+  },
+  "/asc/*": {
+    "target": "https://weichai-wit.com:8080",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  "/realtime/lane/*": {
+    "target": "https://weichai-wit.com:8080",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
   }
 }

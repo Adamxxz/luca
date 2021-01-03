@@ -6,6 +6,8 @@ import { LayoutModule} from '../../layout/layout.module';
 import { VehicleManagementComponent } from './management/management.component';
 import { VehicleMonitorComponent } from './monitor/monitor.component';
 import { VehicleRoutingModule } from './vehicle-routing.module';
+import { NzDatePickerModule } from "ng-zorro-antd/date-picker";
+
 
 const COMPONENTS = [
   VehicleMonitorComponent,
@@ -20,6 +22,7 @@ const COMPONENTS_NOROUNT = [];
     NgxAmapModule,
     NgxEchartsModule,
     LayoutModule,
+    NzDatePickerModule,
   ],
   declarations: [
     ...COMPONENTS,

@@ -8,6 +8,9 @@ import { SimulationSceneHelpComponent } from './scene/scene-help/scene-help.comp
 import { SimulationSceneManagementComponent } from './scene/scene-management/scene-management.component';
 import { SimulationRoutingModule } from './simulation-routing.module';
 import { SimulationTaskManagementComponent } from './task/task-management/task-management.component';
+import {NzAutocompleteModule, NzCollapseModule, NzUploadModule} from "ng-zorro-antd";
+import {NgxEchartsModule} from "ngx-echarts";
+
 
 const COMPONENTS = [
   SimulationSceneBaseComponent,
@@ -23,7 +26,11 @@ const COMPONENTS_NOROUNT = [];
 @NgModule({
   imports: [
     SharedModule,
-    SimulationRoutingModule
+    SimulationRoutingModule,
+    NzUploadModule,
+    NzCollapseModule,
+    NzAutocompleteModule,
+    NgxEchartsModule
   ],
   declarations: [
     ...COMPONENTS,

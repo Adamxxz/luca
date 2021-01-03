@@ -1,1 +1,105 @@
-<page-header></page-header>
+<page-header [homeI18n]="'首页'"></page-header>
+
+<div class="scene-analysis-asc-upload">
+    <nz-upload
+      [(nzFileList)]="fileList"
+      nzType="drag"
+      [nzBeforeUpload]="beforeUpload"
+      [nzMultiple]="true"
+      (nzChange)="handleChange($event)"
+    >
+      <p class = "ant-upload-drag-icon">
+        <i nz-icon nzType="inbox"></i>
+      </p>
+      <p class="ant-upload-text">
+        点击或拖拽上传
+      </p>
+      <p class="ant-upload-hint">
+        场景分析支持上传asc文件，可同时上传多个文件
+      </p>
+    </nz-upload>
+    <p>{{uploadMes}}</p>
+    <button
+      class="compilation-upload-button"
+      nz-button
+      nzType="primary"
+      [nzLoading]="uploading"
+      (click)= "handleUpload()"
+      [disabled]="fileList.length == 0"
+    >
+      {{ uploading ? '上传中' : '开始上传' }}
+    </button>
+</div>
+
+<div align="center">
+    <nz-card class="signal-details-get-card" nzTitle="文件数据可视化" [nzBordered]="false" (click)="analysisOpen()">
+      <p>
+        点击选择文件及信号获取可视化信号值
+      </p>
+    </nz-card>
+</div>
+
+<nz-modal
+  [(nzVisible)]="analysisVisible"
+  [nzTitle]="'场景数据'"
+  [nzFooter]="null"
+  (nzOnCancel)="analysisCancel()"
+  nzWidth="1080"
+>
+  <div class="scene-analysis-select">
+    <nz-select style="display:inline-block;width: 40%"
+               nzMode="default"
+               nzPlaceHolder="选择文件"
+               nzShowSearch
+               nzAutoClearSearchValue
+               [nzOptions]="fileOptions"
+               [(ngModel)]="selectedFile"
+               (ngModelChange)="selectedFileChange()">
+
+    </nz-select>
+    <nz-select style="display:inline-block;width: 40%"
+               nzMode="default"
+               nzPlaceHolder="选择信号"
+               nzShowSearch
+               nzAutoClearSearchValue
+               [nzOptions]="signalOptions"
+               [(ngModel)]="selectedSignal"
+    >
+
+    </nz-select>
+    <button nz-button nzType="default"
+            class="signal-details-get-btn"
+            [disabled]="selectedFile==''||selectedSignal==''"
+            (click)="signalDetails()">信号读取
+    </button>
+    <div id="getSignalDetailsState" *ngIf="getState">
+      <p>
+        <i nz-icon style="font-size: 24px" nzType="sync" [nzSpin]="true"></i>
+      </p>
+      <p>
+        信号数据获取中...
+      </p>
+    </div>
+    <div *ngIf="detailsVisible" class="scene-analysis-details">
+      <div class="signal-details-view">
+        <div *ngIf="chartVisible" class="signal-details-view-chart">
+          <div echarts
+          [options]="analysisOption" (chartInit)="analysisInit($event)">
+          </div>
+        </div>
+        <div *ngIf="sDetailsState">信号值：{{sDetailsState}}</div>
+        <div *ngIf="sDetails" style="height:200px;overflow-x:hidden;text-align: left;">
+          <div *ngFor="let item of sDetailsIndex">{{item}}: {{sDetails[item]}}</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+</nz-modal>
+
+
+
+
+

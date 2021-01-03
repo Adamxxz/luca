@@ -28,7 +28,7 @@
               "src/assets",
               "src/ckplayer.swf",
               "src/language.xml",
-              "src/style.xml",
+              "src/style.xml"
             ],
             "styles": [
               "src/styles.less"
@@ -37,8 +37,8 @@
               "node_modules/ajv/dist/ajv.bundle.js",
               "src/assets/ckplayer/ckplayer.js",
               "src/assets/ckplayer/hls/hls.js",
-              "node_modules/echarts/dist/echarts.js",
-              "src/assets/EZUIKit/ezuikit.js"
+              "node_modules/three/src/Three.js",
+              "src/assets/three/meshline.js"
             ]
           },
           "configurations": {

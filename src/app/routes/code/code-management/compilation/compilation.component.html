@@ -1,0 +1,17 @@
+<div class="compilation-content">
+  <nz-upload nzType="drag" [(nzFileList)]="fileList" [nzBeforeUpload]="beforeUpload">
+<!--    <button class="compilation-selected-button" nz-button><i nz-icon nzType="upload"></i>选择文件</button>-->
+  </nz-upload>
+  <button
+    class="compilation-upload-button"
+    nz-button
+    [nzType]="'primary'"
+    [nzLoading]="uploading"
+    (click)="handleUpload()"
+    [disabled]="fileList.length == 0"
+  >
+    {{ uploading ? '上传中' : '开始上传' }}
+  </button>
+
+<!--  <sf [schema]="schema" (formSubmit)="submit($event)" ></sf>-->
+</div>

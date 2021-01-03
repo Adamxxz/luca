@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Inject, OnDestroy, Optional} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Inject, OnDestroy, OnInit, Optional} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
 import {StartupService} from '@core';
@@ -9,6 +9,7 @@ import {environment} from '@env/environment';
 import { NzNotificationService } from 'ng-zorro-antd';
 import {NzMessageService} from 'ng-zorro-antd/message';
 import {NzModalService} from 'ng-zorro-antd/modal';
+import {isMobile} from "@delon/util";
 
 @Component({
   selector: 'passport-login',
@@ -88,7 +89,7 @@ export class UserLoginComponent implements OnDestroy {
       }
     }, 1000);
 
-    this.http.get('/sms/verify/code??_allow_anonymous=true', {
+    this.http.get('/sms/verify/code?_allow_anonymous=true', {
       phone: this.form.value.mobile,
     }).subscribe((res: any) => {
       if (res.message !== 'success') {
@@ -154,6 +155,7 @@ export class UserLoginComponent implements OnDestroy {
             name: res.result.name,
             email: res.result.email,
             avatar: './assets/tmp/img/avatar.jpg',
+            isMobile: this.isMobile(),
             token: this.tokenService.get().token
           };
           this.settingsService.setUser(user);
@@ -216,11 +218,26 @@ export class UserLoginComponent implements OnDestroy {
     }
   }
 
-  // #endregion
+  isMobile(){
+    const userAgentInfo = navigator.userAgent;
+    const mobileAgents = [ 'Android', 'iPhone', 'iPad', 'iPod', 'SymbianOS', 'Windows Phone', 'Silk', 'BlackBerry', 'Opera Mini', 'IEMobile'];
+    let flag = false;
+    // 根据userAgent判断是否是手机
+    for (let v = 0; v < mobileAgents.length; v++) {
+      if (userAgentInfo.indexOf(mobileAgents[v]) > 0) {
+        flag = true;
+        break;
+      }
+    }
+    return flag;
+  }
 
+  // #endregion
   ngOnDestroy(): void {
     if (this.interval$) {
       clearInterval(this.interval$);
     }
   }
+
+
 }

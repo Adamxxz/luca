@@ -34,8 +34,6 @@ export class StartupService {
   }
 
 
-  user = {};
-
   private viaHttp(resolve: any, reject: any) {
     const tokenData = this.tokenService.get();
     this.settingService.user.token = tokenData.token;
@@ -44,24 +42,11 @@ export class StartupService {
       resolve({});
       return;
     }
-    let user = {};
-    this.http.get('/user/info').subscribe((res) => {
-      user = {
-        id: res.result.id,
-        phone: res.result.phone,
-        nickname: res.result.nickname,
-        name: res.result.name,
-        email: res.result.email,
-        avatar: './assets/tmp/img/avatar.jpg',
-        token: tokenData.token
-      };
-      this.settingService.setUser(user);
-    }, error => this.injector.get(Router).navigateByUrl('/passport/login'));
     // mock
 
     const app: any = {
-      name: `SINOPILOT`,
-      description: `The SinoPilot`
+      name: `智能网联协同研发平台`,
+      description: `工具链1.0`
     };
 
     const menu: any = [
@@ -152,8 +137,17 @@ export class StartupService {
             },
             {
               text: '代码库',
-              link: '/code/code-management',
               icon: 'anticon-code',
+              children: [
+                {
+                  text: '远程管理',
+                  link: '/code/code-management',
+                },
+                {
+                  text: '其他',
+                  link: '/code/code-management/brushing',
+                }
+              ]
             },
             {
               text: '集群管理',

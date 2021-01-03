@@ -1,5 +1,211 @@
 <page-header [homeI18n]="'首页'"> </page-header>
-<nz-card>
-  <sf mode="search" [schema]="searchSchema" (formSubmit)="st.reset($event)" (formReset)="st.reset($event)"></sf>
-  <st #st [data]="url" [columns]="columns"></st>
+
+<div class="vehicle-management-tags">
+  <button  nz-button nzSize="large" id="vehicle-management-view-btn"  (click)="viewInit()">
+    授权车辆
+  </button>
+   <button  nz-button nzSize="large" id="vehicle-management-own-btn" (click)="ownInit()">
+    我的车辆
+  </button>
+</div>
+
+<nz-card class = "vehicle-management-card" *ngIf="viewVisible">
+  <st #st  [data]="viewVehicles" [columns]="viewColumns"></st>
 </nz-card>
+
+<nz-card [nzTitle]="vehicleButtons" class = "vehicle-management-card" *ngIf="ownVisible">
+  <ng-template #vehicleButtons>
+    <button nz-button (click)="vehicleAdd()">添加</button>
+    <button nz-button [disabled]="buttonDisabled" (click)="vehicleEdit()">修改</button>
+    <button nz-button [disabled]="buttonDisabled" (click)="vehicleDelete()">删除</button>
+  </ng-template>
+<!--  <sf mode="search" [schema]="searchSchema" (formSubmit)="st.reset($event)" (formReset)="st.reset($event)"></sf>-->
+  <st #st  class="vehicle-management-form" [data]="viewVehicles" [columns]="myColumns" (change)="stChange($event)"></st>
+</nz-card>
+
+<nz-modal
+  [(nzVisible)]="videoVisible"
+  [nzTitle]="'主机视频播放'"
+  [nzWrapClassName]="'vehicle-management-ant-modal'"
+  [nzWidth]="900"
+  [nzFooter]="null"
+  (nzOnCancel)="videoCancel()"
+>
+  <div nz-row>
+    <nz-card  class = 'video-card'
+              *ngFor="let videoName of videoNames">
+      <div (click)="selectedVideoPlay(videoName)">
+        <video
+          [src]="'../../../../assets/videos/'+videoName"
+          [width]="200"
+          [preload]="'true'"
+          ></video>
+      </div>
+      <h4 (click)="selectedVideoPlay(videoName)">{{videoName.split('.')[0]}}</h4>
+      <div>视频类型：{{videoName.split('.')[1]}}</div>
+    </nz-card>
+  </div>
+</nz-modal>
+<nz-modal
+  [(nzVisible)]="videoPlayVisible"
+  [nzWrapClassName]="'vehicle-management-ant-modal'"
+  [nzWidth]="700"
+  [nzFooter]="null"
+  [nzCloseIcon]=""
+  [draggable]="'true'"
+  (nzOnCancel)="videoPlayCancel()">
+  <video [src]="selectedVideoPath"
+         [width]="650"
+         [preload]="true"
+         [controls]="true"
+  ></video>
+</nz-modal>
+<nz-modal
+  [(nzVisible)]="deleteConfirm"
+  [nzTitle]="'删除确认'"
+  [nzWrapClassName]="'vehicle-management-ant-modal'"
+  (nzOnOk)="deleteSubmit()"
+  (nzOnCancel)="deleteCancel()"
+>
+  <div style="color:white;font-size: 18px">
+    确认删除该车辆：<span style="color: #00d8ff">{{selectedVehicleNo}}</span>？
+  </div>
+</nz-modal>
+
+<nz-modal
+  [(nzVisible)]="vehicleAddVisible"
+  [nzTitle]="'添加我的车辆'"
+  [nzWrapClassName]="'vehicle-management-ant-modal'"
+  [draggable]="'true'"
+  [nzOkText]="'下一步 >'"
+  (nzOnOk)="addSubmit()"
+  (nzOnCancel)="addCancel()">
+
+  <ng-template [ngIf]="basicAdd">
+    <form nz-form [formGroup]="validaFormBasic">
+      <nz-form-item>
+        <nz-form-label nzSm="6" nzRequired>车牌号</nz-form-label>
+        <nz-form-control nzSm="14" nzErrorTip="请输出车牌号">
+          <input nz-input formControlName="plateNo">
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzSm="6" nzRequired>主机VIN码</nz-form-label>
+        <nz-form-control nzSm="14" nzErrorTip="请输出主机VIN码">
+          <input nz-input   formControlName="vin">
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzSm="6">发动机编码</nz-form-label>
+        <nz-form-control nzSm="14">
+          <input nz-input  formControlName="engineNo">
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzSm="6">行车记录仪编号</nz-form-label>
+        <nz-form-control nzSm="14">
+          <input nz-input  formControlName="liveCameraSeq">
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </ng-template>
+
+  <ng-template [ngIf]="cameraAdd">
+    <form nz-form [formGroup]="validaFormCamera">
+      <nz-form-item>
+        <nz-form-label nzSm="6" nzRequired>车辆VIN码</nz-form-label>
+        <nz-form-control nzSm="14">
+          <input nz-input formControlName="vehicleVin">
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzSm="6" nzRequired>appKey</nz-form-label>
+        <nz-form-control nzSm="14" nzErrorTip="请输出摄像头用户名下appKey">
+          <input nz-input   formControlName="appKey">
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzSm="6" nzRequired>appSecret</nz-form-label>
+        <nz-form-control nzSm="14">
+          <input nz-input  formControlName="appSecret">
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzSm="6" nzRequired>摄像头序列号</nz-form-label>
+        <nz-form-control nzSm="14">
+          <input nz-input  formControlName="cameraSeq">
+        </nz-form-control>
+      </nz-form-item>
+
+
+      <nz-form-item>
+        <nz-form-label nzSm="6">摄像头详情</nz-form-label>
+        <nz-form-control nzSm="14">
+          <input nz-input type="text " formControlName="cameraDes" placeholder="输入此摄像头其他详细信息，例如安装位置">
+        </nz-form-control>
+      </nz-form-item>
+
+    </form>
+  </ng-template>
+
+</nz-modal>
+
+
+<nz-modal
+  [(nzVisible)]="vehicleEditVisible"
+  [nzTitle]="'车辆编辑'"
+  [nzWrapClassName]="'vehicle-management-ant-modal'"
+  [draggable]="'true'"
+  [nzOkText]="'下一步 >'"
+  (nzOnOk)="editSubmit()"
+  (nzOnCancel)="editCancel()">
+  <ng-template [ngIf]="basicEdit">
+    <form nz-form [formGroup]="validaFormBasic">
+      <nz-form-item>
+        <nz-form-label nzSm="6" nzRequired>车牌号</nz-form-label>
+        <nz-form-control nzSm="14" nzErrorTip="请输出车牌号">
+          <input nz-input formControlName="plateNo">
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzSm="6" nzRequired>主机VIN码</nz-form-label>
+        <nz-form-control nzSm="14" nzErrorTip="请输出主机VIN码">
+          <input nz-input   formControlName="vin">
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzSm="6">发动机编码</nz-form-label>
+        <nz-form-control nzSm="14">
+          <input nz-input  formControlName="engineNo">
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzSm="6">行车记录仪编号</nz-form-label>
+        <nz-form-control nzSm="14">
+          <input nz-input  formControlName="liveCameraSeq">
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+
+  </ng-template>
+  <ng-template [ngIf]="cameraEdit">
+    <nz-card nzTitle="已有摄像头 ">
+
+    </nz-card>
+    <div>
+      摄像头添加
+    </div>
+
+
+  </ng-template>
+
+</nz-modal>

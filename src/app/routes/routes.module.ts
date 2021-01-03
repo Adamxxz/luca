@@ -6,6 +6,7 @@ import { NzModalModule} from 'ng-zorro-antd';
 import { NgxAmapModule} from 'ngx-amap';
 import { NgxEchartsModule} from 'ngx-echarts';
 import { LayoutModule} from '../layout/layout.module';
+import { DelonFormModule } from "@delon/form";
 // single pages
 import { CallbackComponent } from './callback/callback.component';
 import { UserLockComponent } from './passport/lock/lock.component';
@@ -33,7 +34,9 @@ const COMPONENTS_NOROUNT = [];
     NgxAmapModule,
     NgxEchartsModule,
     NzCarouselModule,
-  NzModalModule],
+    NzModalModule,
+    DelonFormModule
+  ],
   declarations: [
     ...COMPONENTS,
     ...COMPONENTS_NOROUNT
